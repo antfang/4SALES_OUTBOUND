@@ -32,8 +32,7 @@
                     android:background="#dddddd"
                     android:orientation="vertical"
                     android:padding="20dp"
-                    android:scrollbars="vertical"
-                    tools:context=".MainActivity">
+                    android:scrollbars="vertical" >
 
                     <LinearLayout
                         style="@style/SettingRow"
@@ -46,7 +45,7 @@
                             android:text="@string/txt_delivery_no" />
 
                         <EditText
-                            android:id="@+id/pallet_no_9300"
+                            android:id="@+id/delivery_no_delivery"
                             style="@style/TextEdit"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
@@ -54,18 +53,22 @@
                             android:textAlignment="center"  />
 
                         <Button
-                            android:id="@+id/search_9300"
+                            android:id="@+id/clear_0_delivery"
+                            style="@style/Button_X" />
+                        <Button
+                            android:id="@+id/search_delivery"
                             android:layout_width="73dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:background="@color/main_blue_stroke_color"
+                            android:background="@drawable/btn_bottom_confirm_bg"
                             android:text="@string/txt_search"
                             android:textColor="@color/white" />
                     </LinearLayout>
+
                     <com.bin.david.form.core.SmartTable
-                        android:id="@+id/table_1_9300"
+                        android:id="@+id/table_1_delivery"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:layout_height="498dp" />
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -74,12 +77,29 @@
                     android:padding="10dp">
 
                     <Button
-                        android:id="@+id/end_9300"
+                        android:id="@+id/end_delivery"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
-                        android:background="@color/main_blue_stroke_color"
+                        android:background="@drawable/btn_bottom_confirm_bg"
                         android:text="End Lot"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/button_print_delivery_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:padding="10dp">
+                    <Button
+                        android:id="@+id/button_print_delivery"
+                        android:background="@drawable/btn_bottom_confirm_bg"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:text="打印"
                         android:textColor="@color/white" />
 
                 </LinearLayout>

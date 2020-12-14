@@ -16,8 +16,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -25,7 +25,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.zyapi.pos.PosManager;
 import android.zyapi.pos.PrinterDevice;
@@ -40,16 +39,13 @@ import com.sufang.dailog.EditDialog;
 import com.sufang.model.DropModel;
 import com.sufang.scanner.adapter.HistoryAdapter;
 import com.sufang.scanner.callback.MiddlewareListener;
-import com.sufang.scanner.databinding.ActivityMainBinding;
+import com.sufang.scanner.databinding.Activity9300Binding;
 import com.sufang.util.BarcodeCreater;
 import com.sufang.util.ButtonUtils;
 import com.sufang.util.CommonUtil;
 import com.sufang.util.DateUtils;
-import com.sufang.util.LogUtil;
 import com.sufang.util.PreferencesUtils;
 import com.sufang.util.StringUtil;
-
-import org.ksoap2.serialization.SoapObject;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -61,11 +57,12 @@ import java.util.Map;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-public class MainActivity extends AppCompatActivity implements MiddlewareListener {
+public class Activity_9300 extends AppCompatActivity implements MiddlewareListener {
 
-    ActivityMainBinding binding;
+    Activity9300Binding binding;
     private MediaPlayer mediaPlayer = null;
     private MediaPlayer mediaPlayerAlarm = null;
+    private String Pallet_No = "";
     private List<PrintHistory> historyList;
     private HistoryAdapter adapter;
     private PreferencesUtils preferencesUtils = PreferencesUtils.getInstance();
@@ -77,37 +74,47 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
     private Bitmap mBitmap = null;
     private PrinterDevice mPrinter = null;
 
-    private final int MSG_SERIAL_RECV_BUFFER = 1;
     private static final String ISMART_KEY_SCAN_VALUE = "ismart.intent.scanvalue";
-    private final int UPDATE_UI = 2;
-    private final int SHOW_MSG = 3;
-    private final int CARR_COLOR = 4;
-    private final int SET_LOCATION = 5;
-    private final int ClEAR_CONTROL = 6;
+    private final int SEARCH_9300_2 = 1;
+    private final int END_PALLET_4 = 2;
+    private final int SMALL_LOT_COLOR = 3;
+    private final int BIG_LOT_COLOR = 22;
+    private final int PALLET_COLOR = 4;
+    private final int SET_PALLET = 5;
+    private final int SET_CONFIRM_KEY = 24;
+    private final int FOCUSE_CONTROL = 6;
     private final int SCANNER_COLOR = 7;
+    private final int DELIVERY_NO_COLOR = 23;
     private final int PLAY_SOUND = 8;
     private final int PLAY_ALARM_SOUND = 9;
-    private final int GET_HISTORY = 10;
-    private final int LOCATION_FOCUSE = 11;
-    private final int CARR_FOCUSE = 12;
-    private final int AUTO_PRINT = 13;
-    private final int SET_LOCATION_AUTO = 14;
-    private final int INIT_VIEW = 15;
-    private final int QUERY_PART_TYPE = 16;
-    private final int CREATE_PART = 17;
+    private final int SMALL_LOT = 10;
+    private final int PALLET_NO = 11;
+    private final int DELIVERY_NO = 12;
+    private final int BIG_LOT = 13;
+    private final int CUST_PART_NO = 14;
+    private final int CUST_PART_NO_COLOR = 14;
+    private final int SET_CARTON_NO = 16;
     private final int SHOWALERT = 18;
-    private final int QUERY_PARTS = 19;
+    private final int SHOWALERT_1 = 25;
+    private final int VERIFY_CUST_PART_NO_3 = 17;
+    private final int GET_DNLOTID_1 = 19;
+    private final int QUERY_CARTON_2 = 20;
+    private final int CHECK_LOT = 21;
+    private final int CLEAR_CONTROL = 26;
+    private final int CLEAR_CONTROL2 = 27;
     private boolean isOpen = true;
     private static final float BEEP_VOLUME = 1.0f;
     public static String str_codetypename = "";
     public static String str_papername = "标签纸";
-    public static String str_tempCode = "";
-    private DaoSession daoSession;
-    private PrintHistoryDao printHistoryDao;
-    public String scan_str = "";
-    public String location_str = "";
-    public String Part_Type = "";
-    public String Part_Desc = "";
+    public String Small_Lot = "";
+    public String Lot_Id = "";
+    public String Delivery_No = "";
+    public String Confirm_Key = "";
+    public String Carton_NO = "";
+    public String Cust_Part_No = "";
+    public String Config_Flag = "";
+    public String Lot_No = "";
+    public List<PrintHistory> Lot_List = null;
     private ArrayAdapter<String> type_adapter;
     public String Scan_Id = "";
     @SuppressLint("HandlerLeak")
@@ -116,6 +123,21 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             try {
+                if (!isSettingOk()) {
+                    onMiddlewareFail(getString(R.string.txt_alert_message));
+                    return;
+                }
+                if (Menu.Client == null) {
+                    initClient();
+                } else if (Menu.Client.isConnected()) {
+                } else {
+                    Menu.Client.initMsgHandler();
+                    Menu.Client.SetMiddlewareListener(Activity_9300.this);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception ex) {
+                    }
+                }
                 switch (msg.what) {
                     case PLAY_ALARM_SOUND:
                         mediaPlayerAlarm.start();
@@ -128,63 +150,146 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
                             break;
                         }
                         int color = (int) msg.obj;
-                        binding.mainScanIdEdit.setBackgroundColor(color);
-                        binding.mainScanIdEdit.setTextColor(Color.BLACK);
+                        binding.palletNo9300.setBackgroundColor(color);
+                        binding.palletNo9300.setTextColor(Color.BLACK);
                         break;
-                    case CARR_COLOR:
+                    case SMALL_LOT_COLOR:
+                        if (msg == null) {
+                            break;
+                        }
+                        int lotColor = (int) msg.obj;
+                        binding.lotId9300.setBackgroundColor(lotColor);
+                        binding.lotId9300.setTextColor(Color.BLACK);
+                        if (lotColor == Color.GREEN) {
+                            Carton_NO = binding.cartonNo9300.getText().toString();
+                        } else {
+                            Carton_NO = "";
+                            Lot_No = "";
+                            binding.cartonNo9300.setText("");
+                        }
+                        break;
+                    case BIG_LOT_COLOR:
+                        if (msg == null) {
+                            break;
+                        }
+                        int lotColor2 = (int) msg.obj;
+                        binding.lotId29300.setBackgroundColor(lotColor2);
+                        binding.lotId29300.setTextColor(Color.BLACK);
+                        if (lotColor2 == Color.GREEN) {
+                            Lot_Id = binding.lotId29300.getText().toString();
+                        } else {
+                            Lot_Id = "";
+                        }
+                        break;
+                    case PALLET_COLOR:
                         if (msg == null) {
                             break;
                         }
                         int _color = (int) msg.obj;
-//                    binding.carrIdEdit.setTextColor(Color.BLACK);
+                        binding.palletNo9300.setBackgroundColor(_color);
+                        binding.palletNo9300.setTextColor(Color.BLACK);
+                        if (_color == Color.GREEN) {
+                            Pallet_No = binding.palletNo9300.getText().toString();
+                            Confirm_Key = binding.confirmKey9300.getText().toString();
+                        } else {
+                            Pallet_No = "";
+                            Confirm_Key = "";
+                            binding.palletNo9300.setText("");
+                            binding.confirmKey9300.setText("");
+                        }
                         break;
-                    case GET_HISTORY:
-                        getPrintHistory();
+                    case DELIVERY_NO_COLOR:
+                        if (msg == null) {
+                            break;
+                        }
+                        int _color1 = (int) msg.obj;
+                        binding.deliveryNo9300.setBackgroundColor(_color1);
+                        binding.deliveryNo9300.setTextColor(Color.BLACK); if (_color1 == Color.GREEN) {
+                        Delivery_No = binding.deliveryNo9300.getText().toString();
+                    } else {
+                        Delivery_No = "";
+                        Lot_List = null;
+                    }
                         break;
-                    case AUTO_PRINT:
-//                    if (binding.autoPrint.isChecked()) {
-//                        try {
-//                            PrintHistory history = (PrintHistory) msg.obj;
-//                            setPrintData(history);
-//                        } catch (Exception ex) {
-////                            onShowMSG(ex.getMessage());
-//                        }
-//                    }
+                    case CUST_PART_NO_COLOR:
+                        if (msg == null) {
+                            break;
+                        }
+                        int _color3 = (int) msg.obj;
+                        binding.custPartNo9300.setBackgroundColor(_color3);
+                        binding.custPartNo9300.setTextColor(Color.BLACK);
                         break;
-                    case LOCATION_FOCUSE:
-                        binding.carrIdEdit.clearFocus();
-//                    binding.editLocation.setFocusableInTouchMode(true);
-//                    binding.editLocation.requestFocus();
+                    case CLEAR_CONTROL:
+                        binding.lotId9300.setFocusableInTouchMode(true);
+                        binding.lotId9300.requestFocus();
+                        binding.lotId9300.selectAll();
+                        onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.WHITE, null);
+                        onMiddlewareChangeColor(BIG_LOT_COLOR, null, Color.WHITE, null);
+                        onMiddlewareChangeColor(CUST_PART_NO, null, Color.WHITE, null);
+                        Cust_Part_No = "";
+                        Carton_NO = "";
+                        Lot_No = "";
+                        Lot_Id = "";
+                        Config_Flag = "";
+                        binding.lotId9300.setText("");
+                        binding.lotId29300.setText("");
+                        binding.custPartNo9300.setText("");
+                        binding.cartonNo9300.setText("");
                         break;
-                    case CARR_FOCUSE:
-//                    binding.editLocation.clearFocus();
-                        binding.carrIdEdit.setFocusableInTouchMode(true);
-                        binding.carrIdEdit.requestFocus();
+                    case CLEAR_CONTROL2:
+                        Focuse_Control(DELIVERY_NO);
+                        onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.WHITE, null);
+                        onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.WHITE, null);
+                        onMiddlewareChangeColor(BIG_LOT_COLOR, null, Color.WHITE, null);
+                        onMiddlewareChangeColor(CUST_PART_NO, null, Color.WHITE, null);
+                        Cust_Part_No = "";
+                        Carton_NO = "";
+                        Lot_No = "";
+                        Lot_Id = "";
+                        Delivery_No = "";
+                        Lot_List = null;
+                        Confirm_Key = "";
+                        Config_Flag = "";
+                        binding.deliveryNo9300.setText("");
+                        binding.lotId9300.setText("");
+                        binding.lotId29300.setText("");
+                        binding.custPartNo9300.setText("");
+                        binding.cartonNo9300.setText("");
                         break;
-                    case UPDATE_UI:
-//                    PrintHistory bean = (PrintHistory) msg.obj;
-//                    if (bean.getDryStartTime() == null || bean.getDryStartTime().length() <= 0) {
-//                        onShowMSG(getString(R.string.DryStartTime_Error));
-//                        return;
-//                    }
-//                    binding.txtFosbId.setText(bean.getCrrId());
-//                    binding.txtDryStart.setText(bean.getDryStartTime());
-//                    binding.txtDryEnd.setText(bean.getDryEndTime());
-//                    binding.txtNextClean.setText(bean.getNextCleanTime());
-//                    printImageLabel();
-                        break;
-
-                    case ClEAR_CONTROL:
-//                    binding.editLocation.setText("");
-                        break;
-                    case INIT_VIEW:
-                        PrintHistory history = (PrintHistory) msg.obj;
-                        saveHistory(history);
-                        getPrintHistory();
+                    case FOCUSE_CONTROL:
+                        int focuse_id = (int) msg.obj;
+                        switch ((focuse_id)) {
+                            case PALLET_NO:
+                                binding.palletNo9300.setFocusableInTouchMode(true);
+                                binding.palletNo9300.requestFocus();
+                                binding.palletNo9300.selectAll();
+                                break;
+                            case DELIVERY_NO:
+                                binding.deliveryNo9300.setFocusableInTouchMode(true);
+                                binding.deliveryNo9300.requestFocus();
+                                binding.deliveryNo9300.selectAll();
+                                break;
+                            case SMALL_LOT:
+                                binding.lotId9300.setFocusableInTouchMode(true);
+                                binding.lotId9300.requestFocus();
+                                binding.lotId9300.selectAll();
+                                break;
+                            case BIG_LOT:
+                                binding.lotId29300.setFocusableInTouchMode(true);
+                                binding.lotId29300.requestFocus();
+                                binding.lotId29300.selectAll();
+                                break;
+                            case CUST_PART_NO:
+                                binding.custPartNo9300.setFocusableInTouchMode(true);
+                                binding.custPartNo9300.requestFocus();
+                                break;
+                            default:
+                                break;
+                        }
                         break;
                     case SHOWALERT:
-                        String showalert_msg = (String) msg.obj;
-                        SweetAlertDialog dialog = new SweetAlertDialog(MainActivity.this, SweetAlertDialog.NORMAL_TYPE)
+                        final String showalert_msg =  msg.obj.toString();
+                        SweetAlertDialog dialog = new SweetAlertDialog(Activity_9300.this, SweetAlertDialog.NORMAL_TYPE)
                                 .setTitleText(getString(R.string.txt_alert_title))
                                 .setContentText(showalert_msg)
                                 .setConfirmText(getString(R.string.txt_ok))
@@ -197,390 +302,271 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
                         dialog.setCancelable(false);
                         dialog.show();
                         break;
-                    case QUERY_PART_TYPE:
-                        if (msg.obj != null) {
-                            List<String> li = (List<String>) msg.obj;
-                            loadPartTypeList(li);
-                            break;
-                        }
-                        if (!isSettingOk()) {
-                            onMiddlewareFail(getString(R.string.txt_alert_message));
+                    case SHOWALERT_1:
+                        String showalert_msg2 =    msg.obj.toString();
+                        SweetAlertDialog dialog1 = new SweetAlertDialog(Activity_9300.this, SweetAlertDialog.NORMAL_TYPE)
+                                .setTitleText(getString(R.string.txt_alert_title))
+                                .setContentText(showalert_msg2)
+                                .setConfirmText("提交")
+                                .setCancelText("取消")
+                                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                                             @Override
+                                                             public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                                                 sweetAlertDialog.dismiss();
+                                                                 Config_Flag = "Y";
+                                                                 End_Pallet_4(Config_Flag);
+                                                             }
+                                                         }
+                                ).setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                    @Override
+                                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                        Config_Flag = "";
+                                        sweetAlertDialog.dismiss();
+                                    }
+                                });
+
+                        dialog1.setCancelable(true);
+                        dialog1.show();
+                        break;
+                    case SET_PALLET:
+                        binding.palletNo9300.setText(msg.obj.toString());
+                        Pallet_No = msg.obj.toString();
+                        break;
+                    case SET_CONFIRM_KEY:
+                        binding.confirmKey9300.setText(msg.obj.toString());
+                        Confirm_Key = msg.obj.toString();
+                        break;
+                    case SET_CARTON_NO:
+                        binding.cartonNo9300.setText(msg.obj.toString());
+                        Carton_NO = msg.obj.toString();
+                        break;
+                    case CHECK_LOT:
+                        onMiddlewareChangeColor(BIG_LOT_COLOR, null, Color.WHITE, null);
+                        if (!binding.lotId9300.getText().toString().equals(binding.lotId29300.getText().toString())) {
+                            onMiddlewareFail("大小标签不一致。");
+                            onMiddlewareChangeColor(BIG_LOT_COLOR, null, Color.RED, null);
+//                            onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.RED, null);
                             return;
                         }
-                        if (Menu.Client == null) {
-                            initClient();
-                        } else if (Menu.Client.isConnected()) {
-
+                        onMiddlewareChangeColor(BIG_LOT_COLOR, null, Color.GREEN, null);
+                        Focuse_Control(CUST_PART_NO);
+                        break;
+                    case QUERY_CARTON_2:
+                        Carton_NO = "";
+                        Lot_No = "";
+                        binding.cartonNo9300.setText("");
+                        if (binding.deliveryNo9300.getText().toString().isEmpty()) {
+                            onMiddlewareFail("Enter Delivery NO.");
+                            Focuse_Control(DELIVERY_NO);
+                            return;
+                        }
+                        if (binding.lotId9300.getText().toString().isEmpty()) {
+                            onMiddlewareFail("Enter Lot ID.");
+                            Focuse_Control(SMALL_LOT);
+                            return;
+                        }
+                        Delivery_No = binding.deliveryNo9300.getText().toString();
+                        Small_Lot = binding.lotId9300.getText().toString();
+                        boolean flag = false;
+                        if (Lot_List == null || Lot_List.size() <= 0 || Lot_List.get(0).getLot_id().isEmpty()) {
+                            onMiddlewareFail("This Delivery No have not lot List.");
+                            onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.RED, null);
+                            return;
                         } else {
-                            Menu.Client.initMsgHandler();
-                            try {
-                                Thread.sleep(1000);
-                            } catch (Exception ex) {
+                            for (PrintHistory ph :
+                                    Lot_List) {
+                                if (ph.getLot_id().equals(Small_Lot)) {
+                                    flag = true;
+                                    Lot_No = ph.getNo();
+                                    break;
+                                }
                             }
                         }
-                        if (Menu.Client.isConnected()) {
-                            Thread dispatcher1 = new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        List<String> res = Menu.Client.Query_Part_Type_1();
-                                        if (res != null) {
-                                            type_list = new ArrayList<>();
-                                            List<String> sp_res = new ArrayList<>();
-                                            for (String bean :
-                                                    res) {
-                                                if (bean.isEmpty()) {
-                                                    type_list.add(new DropModel(false, "", ""));
-                                                } else {
-                                                    type_list.add(new DropModel(false, bean.split("&")[0], bean.split("&").length > 1 ? bean.split("&")[1] : ""));
-                                                }
-                                                sp_res.add(bean.split("&")[0]);
-                                            }
-                                            Query_Part_Type(sp_res);
-                                        }
-                                    } catch (Exception ex) {
-//                                        onMiddlewareChangeColor(2,"",Color.RED,false);
-                                        onMiddlewareFail(ex.getMessage());
-                                    }
+                        if (!flag) {
+                            onMiddlewareFail("Small lot is not in lot list.");
+                            onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.RED, null);
+                            return;
+                        }
+                        Thread dispatcher1 = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    String res = Menu.Client.GetCartonNo_2(Delivery_No, Small_Lot);
+                                    //显示carton_no
+                                    Set_Carton_No(res);
+                                    Focuse_Control(BIG_LOT);
+                                    onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.GREEN, null);
+                                } catch (Exception ex) {
+                                    onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.RED, null);
+                                    onMiddlewareFail(ex.getMessage());
                                 }
-                            });
-                            dispatcher1.start();
-                        } else {
-                            onMiddlewareFail(getString(R.string.txt_connect_fail));
-                        }
-                        break;
-                    case CREATE_PART: //12
-                        if (msg.obj != null) {
-                            List<String> li = (List<String>) msg.obj;
-                            loadPartTypeList(li);
-                            return;
-                        }
-                        if (binding.mainScanIdEdit.getText().toString().isEmpty()) {
-                            onMiddlewareFail("Enter Scan ID.");
-                            return;
-                        }
-                        if (Part_Type.isEmpty()) {
-                            onMiddlewareFail("Select Part Type.");
-                            return;
-                        }
-                        if (table_list == null) {
-                            onMiddlewareFail("No dataTabale。");
-                            return;
-                        }
-                        Scan_Id = binding.mainScanIdEdit.getText().toString();
-                        if (!isSettingOk()) {
-                            onMiddlewareFail(getString(R.string.txt_alert_message));
-                            return;
-                        }
-                        if (Menu.Client == null) {
-                            initClient();
-                        } else if (Menu.Client.isConnected()) {
-
-                        } else {
-                            Menu.Client.initMsgHandler();
-                            try {
-                                Thread.sleep(1000);
-                            } catch (Exception ex) {
                             }
-                        }
-                        if (Menu.Client.isConnected()) {
-                            Thread dispatcher1 = new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        String expire_date = "";
-                                        String ouput_date = "";
-                                        for (PrintHistory bean :
-                                                table_list) {
-                                            if (bean.getExpire_date().isEmpty() || bean.getOuput_date().isEmpty()) {
-                                                continue;
-                                            }
-                                            expire_date = DateUtils.formatDate(DateUtils.getDate(bean.getExpire_date(), "yyyy/MM/dd"), DateUtils.FORMAT_YYYYMMDDHHMMSS);
-                                            ouput_date = DateUtils.formatDate(DateUtils.getDate(bean.getOuput_date(), "yyyy/MM/dd"), DateUtils.FORMAT_YYYYMMDDHHMMSS);
-                                            break;
-                                        }
-//                                    show_alert(expire_date+"---"+ouput_date);
-                                        if (ouput_date.isEmpty() || expire_date.isEmpty()) {
-                                            throw new Exception("No Date");
-                                        }
-                                        boolean res = Menu.Client.Creat_Part_2(Scan_Id, Part_Type, ouput_date, expire_date);
-                                        if (res) {
-                                            show_alert("Create Success!");
-                                        }
-                                    } catch (Exception ex) {
-                                        onMiddlewareChangeColor(2, null, Color.RED, null);
-                                        onMiddlewareFail(ex.getMessage());
-                                    }
-                                }
-                            });
-                            dispatcher1.start();
-                        } else {
-                            onMiddlewareFail(getString(R.string.txt_connect_fail));
-                        }
-//                        printScanResult(s);
-//                        printImageLabel();
+                        });
+                        dispatcher1.start();
                         break;
-                    case QUERY_PARTS:
-                        onMiddlewareChangeColor(2, null, Color.WHITE, null);
-//                    initTable_1(new ArrayList<PrintHistory>());
+                    case GET_DNLOTID_1:
+                        //onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.WHITE, null);
+                        if (binding.deliveryNo9300.getText().toString().isEmpty()) {
+                            onMiddlewareFail("Enter Delivery NO.");
+                            Focuse_Control(DELIVERY_NO);
+                            return;
+                        }
+                        Lot_List = null;
+                        Delivery_No = binding.deliveryNo9300.getText().toString();
+                        Thread dispatcher2 = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Lot_List = Menu.Client.GetDNLotId_1(Delivery_No);
+                                    onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.GREEN, null);
+                                    Focuse_Control(SMALL_LOT);
+                                    Clear_Control();
+                                } catch (Exception ex) {
+                                    onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.RED, null);
+                                    onMiddlewareFail(ex.getMessage());
+                                }
+                            }
+                        });
+                        dispatcher2.start();
+                        break;
+                    case SEARCH_9300_2:
+                        Set_Pallet("");
+                        Set_Confirm_Key("");
+                        onMiddlewareChangeColor(PALLET_COLOR, null, Color.WHITE, null);
                         if (msg.obj != null) {
                             List<PrintHistory> li = (List<PrintHistory>) msg.obj;
                             initTable_1(li);
                             return;
-                        }
-                        if (binding.mainScanIdEdit.getText().toString().isEmpty()) {
-                            onMiddlewareFail("Enter Scan ID.");
-                            return;
-                        }
-                        Scan_Id = binding.mainScanIdEdit.getText().toString();
-                        if (!isSettingOk()) {
-                            onMiddlewareFail(getString(R.string.txt_alert_message));
-                            return;
-                        }
-                        if (Menu.Client == null) {
-                            initClient();
-                        } else if (Menu.Client.isConnected()) {
-
-                        } else {
-                            Menu.Client.initMsgHandler();
-                            try {
-                                Thread.sleep(1000);
-                            } catch (Exception ex) {
-                            }
-                        }
+                        }//P20201124019
                         if (Menu.Client.isConnected()) {
-                            Thread dispatcher1 = new Thread(new Runnable() {
+                            Thread dispatcher3 = new Thread(new Runnable() {
                                 @Override
                                 public void run() {
                                     try {
-                                        List<PrintHistory> res = Menu.Client.Query_Parts2(Scan_Id);
+                                        List<PrintHistory> res = Menu.Client.Search_9300_2();
                                         if (res != null && res.size() > 0) {
-                                            Query_Parts(res);
-                                            onMiddlewareChangeColor(2, null, Color.GREEN, null);
+                                            //Set_Pallet(res.get(0).getPallet_no());
+                                            // Set_Confirm_Key(res.get(0).getPallet_key());
+                                            initTable_1(res);
+                                            onMiddlewareChangeColor(PALLET_COLOR, null, Color.GREEN, null);
+                                            //Focuse_Control(DELIVERY_NO);
                                         }
                                     } catch (Exception ex) {
-                                        onMiddlewareChangeColor(2, null, Color.RED, null);
-                                        Query_Parts(new ArrayList<PrintHistory>());
+                                        onMiddlewareChangeColor(PALLET_COLOR, null, Color.RED, null);
+                                        Search_9300_2(new ArrayList<PrintHistory>());
                                         onMiddlewareFail(ex.getMessage());
                                     }
                                 }
                             });
-                            dispatcher1.start();
+                            dispatcher3.start();
                         } else {
                             onMiddlewareFail(getString(R.string.txt_connect_fail));
                         }
-//                        printScanResult(s);
-//                        printImageLabel();
+                        break;
+                    case VERIFY_CUST_PART_NO_3:
+                        onMiddlewareChangeColor(CUST_PART_NO_COLOR, null, Color.WHITE, null);
+                        if (Pallet_No.isEmpty()) {
+                            onMiddlewareFail(" Pallet NO 不能为空。");
+                            Search_9300_2(null);
+                            return;
+                        }
+                        if (Delivery_No.isEmpty()) {
+                            onMiddlewareFail("Delivery_No 不能为空.");
+                            Focuse_Control(DELIVERY_NO);
+                            return;
+                        }
+                        if (Lot_Id.isEmpty()) {
+                            onMiddlewareFail("Lot ID 未验证成功。");
+                            Focuse_Control(SMALL_LOT);
+                            return;
+                        }
+//                        if (Carton_NO.isEmpty()) {
+//                            onMiddlewareFail("Carton_NO 不能为空.");
+//                            Focuse_Control(SMALL_LOT);
+//                            return;
+//                        }
+                        if (Lot_No.isEmpty()) {
+                            onMiddlewareFail("项次信息为空.");
+                            Focuse_Control(DELIVERY_NO);
+                            return;
+                        }
+                        Cust_Part_No = binding.custPartNo9300.getText().toString();
+                        if (Cust_Part_No.isEmpty()) {
+                            onMiddlewareFail("Cust_Part_No 不能为空.");
+                            Focuse_Control(CUST_PART_NO);
+                            return;
+                        }
+                        if (Menu.Client.isConnected()) {
+                            Thread dispatcher5 = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Boolean res = Menu.Client.Verify_cust_part_no_3(Pallet_No, Confirm_Key, Cust_Part_No, Lot_Id, Delivery_No, Carton_NO);
+                                        //onMiddlewareChangeColor(CUST_PART_NO_COLOR, null, Color.GREEN, null);
+                                        String erp_res = Menu.Client.UpdPalletNo_3(Delivery_No, Lot_No, Pallet_No);
+                                        if (erp_res.equals("Y")) {
+                                            //清除页面
+                                            Search_9300_2(null);//刷新列表。
+                                            Focuse_Control(SMALL_LOT);
+                                            Clear_Control();
+                                        } else {
+                                            onMiddlewareFail("ERP 未绑定成功。");
+                                            onMiddlewareChangeColor(CUST_PART_NO_COLOR, null, Color.RED, null);
+                                        }
+                                    } catch (Exception ex) {
+                                        onMiddlewareChangeColor(CUST_PART_NO_COLOR, null, Color.RED, null);
+                                        onMiddlewareFail(ex.getMessage());
+                                    }
+                                }
+                            });
+                            dispatcher5.start();
+                        } else {
+                            onMiddlewareFail(getString(R.string.txt_connect_fail));
+                        }
                         break;
 
+                    case END_PALLET_4:
+                        if(msg.obj!=null){
+                            Config_Flag = msg.obj.toString();
+                        }else{
+                            Config_Flag = "";
+                        }
+                        if (Menu.Client.isConnected()) {
+                            Thread dispatcher5 = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Boolean res = Menu.Client.End_Pallet_4(Pallet_No, Confirm_Key, Config_Flag);
+                                        Search_9300_2(null);
+                                        onMiddlewareChangeColor(2, null, Color.GREEN, null);
+                                    } catch (Exception ex) {
+                                        try {
+                                            show_alert2(ex.getMessage().toString());
+                                        } catch (Exception ex1) {
+                                            onMiddlewareFail(ex1.getMessage());
+                                        }
+                                    }
+                                }
+                            });
+                            dispatcher5.start();
+                        } else {
+                            onMiddlewareFail(getString(R.string.txt_connect_fail));
+                        }
+                        break;
                     default:
                 }
             } catch (Exception ex) {
-
+                ex.printStackTrace();
             }
         }
     };
 
-    public void loadPartTypeList(List<String> list) {
-        //将可选内容与ArrayAdapter连接起来
-        type_adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
-        //设置下拉列表的风格
-        type_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //将adapter 添加到spinner中
-        binding.mainPartType.setAdapter(type_adapter);
-        //设置默认值
-        binding.mainPartType.setVisibility(View.VISIBLE);
-//        binding.partsOperSelect.setDefaultFocusHighlightEnabled(true);
-    }
 
-    public void ClearControl() {
-        Message ms = handler.obtainMessage(ClEAR_CONTROL);
-//        ms.obj = msg;
-        ms.sendToTarget();
-    }
-
-    public void locationFocuse() {
-        Message ms = handler.obtainMessage(LOCATION_FOCUSE);
-//        ms.obj = msg;
-        ms.sendToTarget();
-    }
-
-    public void carrFocuse() {
-        Message ms = handler.obtainMessage(CARR_FOCUSE);
-        ms.sendToTarget();
-    }
-
-    public void printScanResult(String result) {
-        result = result.replaceAll(" ", "");
-//        if (result.equals(str_tempCode) || result.length() < 5) {
-//            return;
-//        } else {
-//            str_tempCode = result;
-//        }
-        // 1：一维码 2：二维码
-        int ScanCodeType = 1;
-        if (str_codetypename == null) {
-            str_codetypename = "一维码";
-        }
-        switch (str_codetypename) {
-            case "一维码":
-                ScanCodeType = 1;
-                break;
-            case "二维码":
-                ScanCodeType = 2;
-                break;
-        }
-        if (result.length() > 80) {
-            ScanCodeType = 2;
-        }
-
-        //打印浓度
-        int print_setting = 25;
-//        try
-//        {
-//            print_setting = preferencesUtils.getInt(Constant.KEY_PRINT_SETTING);
-//        }
-//        catch (Exception ex)
-//        {}
-        int concentration = print_setting;
-        if (str_papername.equals("标签纸")) {
-            //构造TextData实例
-            PrinterDevice.TextData tData_head = mPrinter.new TextData();
-            if (IS_FIRST_PRINT == false) {
-                //退步
-                tData_head.addParam("1B4B15");
-            } else {
-                //进步
-                tData_head.addParam("1B4A08");
-
-            }
-            mPrinter.addText(concentration, tData_head);
-        }
-        //构造TextData实例
-        PrinterDevice.TextData tData_body = mPrinter.new TextData();
-        //添加打印内容
-        tData_body.addText(result + "\n");
-        tData_body.addParam(PrinterDevice.PARAM_ALIGN_MIDDLE);
-        //设置两倍字体大小
-        tData_body.addParam(PrinterDevice.PARAM_TEXTSIZE_1X);
-        //添加到打印队列
-        mPrinter.addText(concentration, tData_body);
-        int number_count = StringUtil.isNumeric(result);
-        int str_count = number_count + (result.length() - number_count) * 2;
-        int mWidth = 300;
-        int left = 30;
-        int _s_45 =0;
-        if (str_count > 16 && str_count <= 26) {
-            mWidth = 390;//
-            left=0;
-        } else if (str_count > 26) {
-            mWidth = 390;
-            concentration =1;
-            left=0;
-            showMsg("条码内容过长，识别率可能降低");
-//            _s_45 =-90;
-        } else {
-            mWidth = 300;
-            left=30;
-        }
-        int mHeight = 60;
-        if (ScanCodeType == 2) {
-            mWidth = 150;
-            mHeight = 150;
-        }
-        mBitmap = BarcodeCreater.creatBarcode(this, result, mWidth, mHeight, false, ScanCodeType,_s_45);
-        byte[] printData = BitmapTools.bitmap2PrinterBytes(mBitmap);
-        mPrinter.addBmp(concentration, left, mBitmap.getWidth(), mBitmap.getHeight(), printData);
-        if (str_papername.equals("标签纸")) {
-            //添加黑标检测 走纸到黑标处再开始打印下一张数据
-            mPrinter.addAction(PrinterDevice.PRINTER_CMD_KEY_CHECKBLACK);
-        }
-        //构造TextData实例
-        PrinterDevice.TextData tDataEnter = mPrinter.new TextData();
-        //多输出到撕纸口(print more paper for paper tearing)
-        tDataEnter.addText("\n\n\n");
-        //添加到打印队列(add to print queue)
-        mPrinter.addText(concentration, tDataEnter);
-
-        //开始队列打印(begin to print)
-        mPrinter.printStart();
-
-        //重置首次打印变量值(reset the first printing variable)
-//        IS_FIRST_PRINT = false;
-        setIsFirstPrint(false);
-    }
-
-
-    public void printImageLabel_test() {
-        try {
-            String txt = binding.carrIdEdit.getText().toString();
-            if (txt.length() > 0) {
-                //打印LOT_ID条形码
-                printScanResult(txt);
-            } else {
-                // printImageLabel();
-            }
-        } catch (Exception e) {
-            showMsg(e.getMessage());
-        }
-    }
-
-    /**
-     * //     * 用图片打印标签
-     * //
-     */
-//    private void printImageLabel() {
-//        log("is first print = " + IS_FIRST_PRINT);
-//        //打印浓度
-//        int print_setting = 25;
-////        try
-////        {
-////            print_setting = preferencesUtils.getInt(Constant.KEY_PRINT_SETTING);
-////        }
-////        catch (Exception ex)
-////        {}
-//        int concentration = print_setting;
-//        //构造TextData实例
-//        PrinterDevice.TextData tData_head = mPrinter.new TextData();
-//        if (IS_FIRST_PRINT == false) {
-//            //退步
-//            tData_head.addParam("1B4B20");
-//        } else {
-//            //进步
-//            tData_head.addParam("1B4A06");
-//
-//        }
-//        mPrinter.addText(concentration, tData_head);
-//        Bitmap bitmap = com.sufang.util.BitmapTools.viewConversionBitmap(binding.llPrint);
-//        if (bitmap == null) {
-//            showMsg(getString(R.string.txt_get_print_img_failed));
-//            return;
-//        }
-//        bitmap = BitmapTools.gray2Binary(bitmap);
-//        byte[] printImgData = BitmapTools.bitmap2PrinterBytes(bitmap);
-//        LogUtil.d("aa", bitmap.getWidth() + " - " + bitmap.getHeight());
-//        mPrinter.addBmp(concentration, 0, bitmap.getWidth(), bitmap.getHeight(), printImgData);
-//        //添加黑标检测 走纸到黑标处再开始打印下一张数据
-//        mPrinter.addAction(PrinterDevice.PRINTER_CMD_KEY_CHECKBLACK);
-//        PrinterDevice.TextData tDataEnter = mPrinter.new TextData();
-//        //多输出到撕纸口(print、n more paper for paper tearing)
-//        tDataEnter.addText("\n\n\n");
-//        //添加到打印队列(add to print queue)
-//        mPrinter.addText(concentration, tDataEnter);
-//        //开始队列打印(begin to print)
-//        mPrinter.printStart();
-//        bitmap.recycle();
-//        //重置首次打印变量值(reset the first printing variable)
-////        IS_FIRST_PRINT = false;
-//        setIsFirstPrint(false);
-//    }
-//
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_9300);
         PosManager.get().init(getApplicationContext(), "PDA");
-
         initClient();
         initBeepSound();
         initAlarmSound();
@@ -595,13 +581,21 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
             if (mAction.equals(ISMART_KEY_SCAN_VALUE)) {
                 byte[] b_strscan = intent.getByteArrayExtra("scanvalue");
                 String s = new String(b_strscan);
-                if (binding.mainScanIdEdit.hasFocus()) {//扫描的是ScanId
-                    binding.mainScanIdEdit.setText(s);
-                    Query_Parts(null);
-                }
-
-                if (binding.carrIdEdit.hasFocus()) {//扫描的是carr_id
-                    binding.carrIdEdit.setText(s);
+                if (binding.palletNo9300.hasFocus()) {//扫描的是ScanId
+//                    binding.palletNo9300.setText(s);
+//                    Search_9300_2(null);
+                } else if (binding.deliveryNo9300.hasFocus()) {
+                    binding.deliveryNo9300.setText(s);
+                    Get_DNLotId_1();
+                } else if (binding.lotId9300.hasFocus()) {
+                    binding.lotId9300.setText(s);
+                    Query_Carton_2();
+                } else if (binding.lotId29300.hasFocus()) {
+                    binding.lotId29300.setText(s);
+                    Check_Lot();
+                } else if (binding.custPartNo9300.hasFocus()) {
+                    binding.custPartNo9300.setText(s);
+                    Verify_Cust_Part_No_3();
                 }
             }
         }
@@ -611,7 +605,8 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
         try {
             if (Menu.Client == null || !Menu.Client.isConnected()) {
                 Menu.initClient(this);
-            } else {
+            }
+            if (Menu.Client != null) {
                 Menu.Client.SetMiddlewareListener(this);
             }
         } catch (Exception ex) {
@@ -619,36 +614,72 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
         }
     }
 
-    private void sendSetLocation(String s) {
-        Message msg = handler.obtainMessage(SET_LOCATION);
-        msg.obj = s;
-        Log.d("hello", "scanvalue:" + s);
-        msg.sendToTarget();
-    }
-
-    private void sendSetLocation_Auto(String s) {
-        Message msg = handler.obtainMessage(SET_LOCATION_AUTO);
-        msg.obj = s;
-        Log.d("hello", "scanvalue:" + s);
-        msg.sendToTarget();
-    }
-
-    private void Query_Part_Type(List<String> res) {
-        Message msg = handler.obtainMessage(QUERY_PART_TYPE);
-        if (res != null) {
-            msg.obj = res;
-        }
-        msg.sendToTarget();
-    }
-
-    private void Create_Part_Type() {
-        Message msg = handler.obtainMessage(CREATE_PART);
-        msg.sendToTarget();
-    }
-
-    private void Query_Parts(List<PrintHistory> list) {
-        Message msg = handler.obtainMessage(QUERY_PARTS);
+    private void Search_9300_2(List<PrintHistory> list) {
+        Message msg = handler.obtainMessage(SEARCH_9300_2);
         msg.obj = list;
+        msg.sendToTarget();
+    }
+
+    private void Clear_Control() {
+        Message msg = handler.obtainMessage(CLEAR_CONTROL);
+        msg.sendToTarget();
+    }
+
+    private void Clear_Control2() {
+        Message msg = handler.obtainMessage(CLEAR_CONTROL2);
+        msg.sendToTarget();
+    }
+
+    private void Verify_Cust_Part_No_3() {
+        Message msg = handler.obtainMessage(VERIFY_CUST_PART_NO_3);
+        msg.sendToTarget();
+    }
+
+    private void End_Pallet_4(String config_Flag) {
+        Message msg = handler.obtainMessage(END_PALLET_4);
+        msg.obj = config_Flag;
+        msg.sendToTarget();
+    }
+
+    private void Get_DNLotId_1() {
+        onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.WHITE, null);
+        Message msg = handler.obtainMessage(GET_DNLOTID_1);
+        msg.sendToTarget();
+    }
+
+    private void Query_Carton_2() {
+        onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.WHITE, null);
+        Message msg = handler.obtainMessage(QUERY_CARTON_2);
+        msg.sendToTarget();
+    }
+
+    private void Check_Lot() {
+        Message msg = handler.obtainMessage(CHECK_LOT);
+        msg.sendToTarget();
+    }
+
+
+    public void Set_Pallet(String pallet_str) {
+        Message msg = handler.obtainMessage(SET_PALLET);
+        msg.obj = pallet_str;
+        msg.sendToTarget();
+    }
+
+    public void Set_Confirm_Key(String confirm_Key) {
+        Message msg = handler.obtainMessage(SET_CONFIRM_KEY);
+        msg.obj = confirm_Key;
+        msg.sendToTarget();
+    }
+
+    private void Focuse_Control(int control_id) {
+        Message msg = handler.obtainMessage(FOCUSE_CONTROL);
+        msg.obj = control_id;
+        msg.sendToTarget();
+    }
+
+    private void Set_Carton_No(String carton) {
+        Message msg = handler.obtainMessage(SET_CARTON_NO);
+        msg.obj = carton;
         msg.sendToTarget();
     }
 
@@ -658,16 +689,10 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
         ms.sendToTarget();
     }
 
-    private void getHistory() {
-        Message msg = handler.obtainMessage(GET_HISTORY);
-        msg.sendToTarget();
-    }
-
-    private void sendPrintMsg(String s) {
-        Message msg = handler.obtainMessage(MSG_SERIAL_RECV_BUFFER);
-        msg.obj = s;
-        Log.d("hello", "scanvalue:" + s);
-        msg.sendToTarget();
+    private void show_alert2(String msg) {
+        Message ms = handler.obtainMessage(SHOWALERT_1);
+        ms.obj = msg;
+        ms.sendToTarget();
     }
 
     @Override
@@ -697,47 +722,9 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
                 && CommonUtil.isNotNull(preferencesUtils.getString(Constant.WEBSERVICE_URL));
     }
 
-    private void getPrintHistory() {
-        historyList = printHistoryDao.queryBuilder()
-                .orderDesc(PrintHistoryDao.Properties.CreateTime).limit(50).list();
-//        if (CommonUtil.isNotEmpty(historyList)) {
-////            binding.lvHistory.setVisibility(View.VISIBLE);
-////            binding.tvNoHistory.setVisibility(View.GONE);
-////            if (historyList.size() == 100) {
-////                new MyAsyncTask().execute();
-////            }
-////        } else {
-////            binding.lvHistory.setVisibility(View.GONE);
-////            binding.tvNoHistory.setVisibility(View.VISIBLE);
-////        }
-        adapter.setData(historyList);
-    }
-
-    private void saveHistory(PrintHistory history) {
-        try {
-            if (printHistoryDao != null && history != null) {
-                printHistoryDao.save(history);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            showMsg(getString(R.string.txt_save_history_failed));
-        }
-    }
-
-    private void deleteHistory() {
-        Date lastDate = historyList.get(historyList.size() - 1).getCreateTime();
-        List<PrintHistory> delList = printHistoryDao.queryBuilder()
-                .where(PrintHistoryDao.Properties.CreateTime.le(lastDate)).list();
-        if (delList != null && delList.size() > 0) {
-            printHistoryDao.deleteInTx(delList);
-        }
-    }
-
     @Override
     public void onMiddlewarePrint(PrintHistory history) {
-        Message ms = handler.obtainMessage(AUTO_PRINT);
-        ms.obj = history;
-        ms.sendToTarget();
+
     }
 
 
@@ -745,7 +732,7 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
     public void onMiddlewareChangeColor(int code, String msg, int color, Boolean alarm) {
         switch (code) {
             case 1:
-                Message ms1 = handler.obtainMessage(CARR_COLOR);
+                Message ms1 = handler.obtainMessage(PALLET_COLOR);
                 ms1.obj = color;
                 ms1.sendToTarget();
                 break;
@@ -753,6 +740,26 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
                 Message ms2 = handler.obtainMessage(SCANNER_COLOR);
                 ms2.obj = color;
                 ms2.sendToTarget();
+                break;
+            case SMALL_LOT_COLOR:
+                Message ms3 = handler.obtainMessage(SMALL_LOT_COLOR);
+                ms3.obj = color;
+                ms3.sendToTarget();
+                break;
+            case BIG_LOT_COLOR:
+                Message b = handler.obtainMessage(BIG_LOT_COLOR);
+                b.obj = color;
+                b.sendToTarget();
+                break;
+            case DELIVERY_NO_COLOR:
+                Message ms4 = handler.obtainMessage(DELIVERY_NO_COLOR);
+                ms4.obj = color;
+                ms4.sendToTarget();
+                break;
+            case CUST_PART_NO_COLOR:
+                Message ms5 = handler.obtainMessage(CUST_PART_NO_COLOR);
+                ms5.obj = color;
+                ms5.sendToTarget();
                 break;
             default:
                 break;
@@ -771,23 +778,18 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
 
     @Override
     public void onMiddlewareHistory(PrintHistory history) {
-        Message ms = handler.obtainMessage(INIT_VIEW);
-        ms.obj = history;
-        ms.sendToTarget();
+
     }
 
     @Override
     public void onMiddlewareSuccessShow() {
 
-//        showMsg(msg);
-        Message ms = handler.obtainMessage(CARR_COLOR);
-        ms.obj = Color.GREEN;
-        ms.sendToTarget();
     }
 
     @Override
     public void onShowMSG(String msg) {
-        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+        show_alert(msg);
+        // Toast.makeText(Activity_9300.this, msg, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -809,27 +811,6 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
     @Override
     public void onConnectFail(String msg) {
 //        onShowMSG(msg);
-    }
-
-    /**
-     * 异步删除多余记录
-     */
-    class MyAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                deleteHistory();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void voids) {
-
-        }
     }
 
     private void initPrint() {
@@ -993,52 +974,24 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
 
     private void initViews() {
         initTable_1(null);
-        binding.mainPartType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //加载eqp
-                String select_text = type_adapter.getItem(position).toString();
-                if (!select_text.isEmpty()) {
-                    String[] sp = select_text.split("&");
-                    Part_Type = sp[0];
-                    if (sp.length > 1) {
-                        Part_Desc = sp[1];
-                    } else {
-                        Part_Desc = "";
-                    }
-                } else {
-                    Part_Type = "";
-                    Part_Desc = "";
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        binding.mainCreatePart.setOnClickListener(new View.OnClickListener() {
+        binding.search9300.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Create_Part_Type();
+                Search_9300_2(null);
+                Clear_Control2();
             }
         });
-        binding.mainPrintButton.setOnClickListener(new View.OnClickListener() {
+        binding.end9300.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String txt = binding.carrIdEdit.getText().toString();
-                if (txt.length() > 0) {
-                    //打印LOT_ID条形码
-                    printScanResult(txt);
-                }
+                End_Pallet_4("");
             }
         });
-        Query_Part_Type(null);
         binding.includeTitle.rightText.setVisibility(View.INVISIBLE);
         //退回
         binding.includeTitle.leftButton.setVisibility(View.VISIBLE);
-        binding.includeTitle.titleRefreshButton.setVisibility(View.VISIBLE);
-        binding.includeTitle.title1.setText("备件领用录入");
+        binding.includeTitle.titleRefreshButton.setVisibility(View.INVISIBLE);
+        binding.includeTitle.title1.setText("9300");
         binding.includeTitle.leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1048,84 +1001,287 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
         binding.includeTitle.titleRefreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initTable_1(null);
-                Query_Part_Type(null);
-                binding.mainScanIdEdit.setText("");
-                onMiddlewareChangeColor(2, null, Color.WHITE, null);
+                Search_9300_2(null);
+                Clear_Control2();
+            }
+        });
+        binding.clear19300.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.deliveryNo9300.setText("");
+                Focuse_Control(DELIVERY_NO);
+                onMiddlewareChangeColor(DELIVERY_NO_COLOR,null,Color.WHITE,null);
+            }
+        });
+        binding.clear29300.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.lotId9300.setText("");
+                Focuse_Control(SMALL_LOT);
+                onMiddlewareChangeColor(SMALL_LOT_COLOR,null,Color.WHITE,null);
+            }
+        });
+        binding.clear39300.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.lotId29300.setText("");
+                Focuse_Control(BIG_LOT);
+                onMiddlewareChangeColor(BIG_LOT_COLOR,null,Color.WHITE,null);
+            }
+        });
+        binding.clear49300.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.custPartNo9300.setText("");
+                Focuse_Control(CUST_PART_NO);
+                onMiddlewareChangeColor(CUST_PART_NO_COLOR,null,Color.WHITE,null);
 
             }
         });
-        binding.includeTitle.rightText.setOnClickListener(new View.OnClickListener() {
+        binding.Action19300.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toSetting();
+                Get_DNLotId_1();
             }
         });
-        binding.mainActiveText.setOnClickListener(new View.OnClickListener() {
+        binding.Action29300.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Query_Parts(null);
+                Query_Carton_2();
             }
         });
-        binding.mainSearchType.setOnClickListener(new View.OnClickListener() {
+        binding.Action39300.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //打开搜索
-                if (type_list == null || type_list.size() <= 0) {
-                    onShowMSG("未加载到Type_List");
-                    return;
-                }
-                Intent intent = new Intent(MainActivity.this, OpenDailogActivty.class);
-                Map<String, String> column_map = new HashMap<String, String>();
-                column_map.put("Column_1", "Type");
-                column_map.put("Column_2", "Desc");
-                Map<String, String> field_column_map = new HashMap<String, String>();
-                field_column_map.put("Column_1", "column_1");
-                field_column_map.put("Column_2", "column_2");
-                intent.putExtra("table_list", (Serializable) type_list);
-                intent.putExtra("column_map", (Serializable) column_map);
-                intent.putExtra("field_column_map", (Serializable) field_column_map);
-                intent.putExtra("requestCode", 1);
-                startActivityForResult(intent, 1);
+                Check_Lot();
+            }
+        });
+        binding.Action49300.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Verify_Cust_Part_No_3();
+            }
+        });
+        binding.deliveryNo9300.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.WHITE, null);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        binding.lotId9300.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.WHITE, null);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        binding.lotId29300.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    onMiddlewareChangeColor(BIG_LOT_COLOR, null, Color.WHITE, null);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        binding.custPartNo9300.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    onMiddlewareChangeColor(CUST_PART_NO_COLOR, null, Color.WHITE, null);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
         IntentFilter filter = new IntentFilter();
         filter.addAction(ISMART_KEY_SCAN_VALUE);
         registerReceiver(mReceiver, filter);
+        if(Menu.USER_NAME.toUpperCase().equals("ADMIN"))
+        {
+            binding.buttonPrint9300layout.setVisibility(View.GONE);
+        }
+        binding.buttonPrint9300.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!binding.palletNo9300.getText().toString().isEmpty())
+                {
+                    printScanResult(binding.palletNo9300.getText().toString(),true);
+                }if(!binding.custPartNo9300.getText().toString().isEmpty())
+                {
+                    printScanResult(binding.custPartNo9300.getText().toString(),true);
+                }
+            }
+        });
+    }
+    public Bitmap printScanResult(String result, boolean isprint) {
+        int ScanCodeType = 1;
+        if (str_codetypename == null) {
+            str_codetypename = "一维码";
+        }
+        switch (str_codetypename) {
+            case "一维码":
+                ScanCodeType = 1;
+                result = result.replaceAll(" ", "");
+                result = result.replaceAll("\n", "");
+                break;
+            case "二维码":
+                ScanCodeType = 2;
+                break;
+        }
+        if (result.length() > 80) {
+            ScanCodeType = 2;
+        }
+
+        //打印浓度
+        int print_setting = 25;
+        try {
+            print_setting =  preferencesUtils.getStringToInt(Constant.KEY_PRINT_SETTING,25) ;
+        } catch (Exception ex) {
+        }
+        int concentration = print_setting;
+        if (str_papername.equals("标签纸")) {
+            //构造TextData实例
+            PrinterDevice.TextData tData_head = mPrinter.new TextData();
+            if (IS_FIRST_PRINT == false) {
+                //退步
+                tData_head.addParam("1B4B15");
+            } else {
+                //进步
+                tData_head.addParam("1B4A08");
+
+            }
+            if (isprint) {
+                mPrinter.addText(concentration, tData_head);
+            }
+        }
+        //构造TextData实例
+//        PrinterDevice.TextData tData_body = mPrinter.new TextData();
+//        //添加打印内容
+//        tData_body.addText(result + "\n");
+//        tData_body.addParam(PrinterDevice.PARAM_ALIGN_MIDDLE);
+//        //设置两倍字体大小
+//        tData_body.addParam(PrinterDevice.PARAM_TEXTSIZE_1X);
+        //添加到打印队列
+        //  mPrinter.addText(concentration, tData_body);
+        int number_count = StringUtil.isNumeric(result);
+        int str_count = number_count + (result.length() - number_count) * 2;
+        int mWidth = 300;
+        int left = 30;
+        int _s_45 = 0;
+        if (ScanCodeType == 1) {
+            if (str_count > 16 && str_count <= 26) {
+                mWidth = 390;//
+                left = 20 ;
+            } else if (str_count > 26) {
+                mWidth = 390;
+                concentration = 1;
+                left = 0;
+                showMsg("条码内容过长，识别率可能降低。");
+//            _s_45 =-90;
+            } else {
+                mWidth = 300;
+                left = 30;
+            }
+        }
+        int mHeight = 60;
+        boolean flag = true;
+        if (ScanCodeType == 2) {
+            mWidth = 150;
+            mHeight = 150;
+            left =  50;
+            flag = false;
+        }
+        mBitmap = BarcodeCreater.creatBarcode(this, result, mWidth, mHeight,flag , ScanCodeType, _s_45);
+        if (isprint) {
+            byte[] printData = BitmapTools.bitmap2PrinterBytes(mBitmap);
+            mPrinter.addBmp(concentration, left, mBitmap.getWidth(), mBitmap.getHeight(), printData);
+
+            if (str_papername.equals("标签纸")) {
+                //添加黑标检测 走纸到黑标处再开始打印下一张数据
+                mPrinter.addAction(PrinterDevice.PRINTER_CMD_KEY_CHECKBLACK);
+            }
+            //构造TextData实例
+            PrinterDevice.TextData tDataEnter = mPrinter.new TextData();
+            //多输出到撕纸口(print more paper for paper tearing)
+            tDataEnter.addText("\n\n\n");
+            //添加到打印队列(add to print queue)
+            mPrinter.addText(concentration, tDataEnter);
+            //开始队列打印(begin to print)
+            mPrinter.printStart();
+            //重置首次打印变量值(reset the first printing variable)
+//        IS_FIRST_PRINT = false;
+            setIsFirstPrint(false);
+        }
+        return mBitmap;
     }
 
-    private Column<Object> picking_date_Column;
-    private Column<Object> expire_date_Column;
-    private Column<Object> part_id_Column;
-    private Column<Object> part_type_Column;
-    private Column<Object> desc_Column;
-    private Column<Object> ouput_date_Column;
-    private Column<Boolean> checkColumn;
+
+    private Column<Object> pallet_no_Column;
+    private Column<Object> delivery_no_Column;
+    private Column<Object> lot_id_Column;
+    private Column<Object> setPallet_key_Column;
     List<PrintHistory> table_list = null;
 
     private void initTable_1(List<PrintHistory> history_list) {
-        part_id_Column = part_id_Column != null ? part_id_Column : new Column<>(getString(R.string.txt_column_part_id), "part_id");
-        desc_Column = desc_Column != null ? desc_Column : new Column<>(getString(R.string.txt_column_desc), "desc");
-        ouput_date_Column = ouput_date_Column != null ? ouput_date_Column : new Column<>(getString(R.string.txt_column_ouput_date), "ouput_date");
-        expire_date_Column = expire_date_Column != null ? expire_date_Column : new Column<>(getString(R.string.txt_column_expire_date), "expire_date");
-        picking_date_Column = picking_date_Column != null ? picking_date_Column : new Column<>(getString(R.string.txt_column_picking_date), "picking_date");
-        part_type_Column = part_type_Column != null ? part_type_Column : new Column<>(getString(R.string.txt_column_part_type), "part_type");
+        pallet_no_Column = pallet_no_Column != null ? pallet_no_Column : new Column<>(getString(R.string.txt_column_pallet_no), "pallet_no");
+        delivery_no_Column = delivery_no_Column != null ? delivery_no_Column : new Column<>(getString(R.string.txt_column_delivery_no), "delivery_no");
+        lot_id_Column = lot_id_Column != null ? lot_id_Column : new Column<>(getString(R.string.txt_carrier), "lot_id");
+        setPallet_key_Column = setPallet_key_Column != null ? setPallet_key_Column : new Column<>("key", "pallet_key");
         table_list = history_list;
         if (history_list == null) {
             history_list = new ArrayList<>();
-            history_list.add(new PrintHistory(false, "", "", "", "", "", new Date()));
+            PrintHistory h = new PrintHistory(false, "", "", "", "", "", new Date());
+            h.setLot_id("");
+            h.setDelivery_no("");
+            h.setPallet_no("");
+            history_list.add(h);
+
         }
-        TableData tableData = new TableData<PrintHistory>("Part List", history_list, part_id_Column, part_type_Column,
-                desc_Column, ouput_date_Column, expire_date_Column, picking_date_Column);
-        binding.mainTable11.setTableData(tableData);
-        TableConfig config = binding.mainTable11.getConfig();
+        setPallet_key_Column.setWidth(0);
+        setPallet_key_Column.setMinWidth(0);
+        TableData tableData = new TableData<PrintHistory>("List", history_list, pallet_no_Column, delivery_no_Column, lot_id_Column, setPallet_key_Column);
+        binding.table19300.setTableData(tableData);
+        TableConfig config = binding.table19300.getConfig();
         config.setShowTableTitle(false);
         config.setShowXSequence(false);
     }
 
     private void toSetting() {
         //弹出口令对话框
-        final EditDialog editDialog = new EditDialog(MainActivity.this);
+        final EditDialog editDialog = new EditDialog(Activity_9300.this);
         editDialog.setTitle(getString(R.string.txt_please_input_setting_psw));
         editDialog.setYesOnclickListener(getString(R.string.txt_ok), new EditDialog.onYesOnclickListener() {
             @Override
@@ -1138,8 +1294,7 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
                     imm.hideSoftInputFromWindow(editDialog.getCurrentFocus().getApplicationWindowToken(), 0);
                     editDialog.dismiss();
                     //打开设置页面
-                    SettingActivity._MainActivity = null;
-                    Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+                    Intent intent = new Intent(Activity_9300.this, SettingActivity.class);
                     startActivity(intent);
                 } else {
                     showMsg(getString(R.string.code_error));
@@ -1155,13 +1310,6 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
         editDialog.show();
     }
 
-    private void setPrintData(PrintHistory bean) {
-        Message msg = handler.obtainMessage(UPDATE_UI);
-        msg.obj = bean;
-        msg.sendToTarget();
-    }
-
-
     private void log(String msg) {
         Log.d(this.getClass().getName(), this.toString() + "=>" + msg);
     }
@@ -1169,7 +1317,6 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
     private void logE(String msg) {
         Log.e(this.getClass().getName(), this.toString() + "=>" + msg);
     }
-
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
@@ -1195,11 +1342,11 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
                             type_list) {
                         i++;
                         if (bean.getColumn_1().equals(returnedData)) {
-                            binding.mainPartType.setSelection(i);
+//                            binding.mainPartType.setSelection(i);
                             return;
                         }
                     }
-                    binding.mainPartType.setSelection(0);
+//                    binding.mainPartType.setSelection(0);
                 }
                 break;
             default:
@@ -1222,12 +1369,6 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
         if (str_papername.equals("标签纸")) {
             //手持机Fn的键值(PDA keycode)[其它键值为：SCAN:280 BACK:13 LEFT:131 RIGHT:132]
             if (keyCode == 133) {
-                //fixme
-//                IS_FIRST_PRINT = true;
-
-                //1->走纸检测   mWidth 黑标的宽度
-                //mPrinter.addAction(PrinterDevice.PRINTER_CMD_KEY_CHECKBLACK);
-                // mPrinter.printStart();
                 mPrinter.checkBlackAsync();
             }
         }
@@ -1246,7 +1387,6 @@ public class MainActivity extends AppCompatActivity implements MiddlewareListene
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
         }
-        SettingActivity._MainActivity = null;
         if (mediaPlayerAlarm != null) {
             mediaPlayerAlarm.release();
             mediaPlayerAlarm = null;
