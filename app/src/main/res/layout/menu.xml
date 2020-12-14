@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#dddddd"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/includeTitle"
+            layout="@layout/update_location_title"></include>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#dddddd"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#dddddd"
+                android:orientation="vertical"
+                android:padding="20dp"
+                tools:context=".menu">
+
+                <TextView
+                    android:id="@+id/text_login_user"
+                    style="@style/SettingRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="用户名：" />
+
+                <LinearLayout
+                    style="@style/SettingRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#dddddd"
+                    android:gravity="center"
+                    android:padding="10dp">
+
+                    <Button
+                        android:id="@+id/button_menu_1"
+                        style="@style/Widget.AppCompat.Button.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_bottom_confirm_bg"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="@string/txt_menu_1"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </LinearLayout>
+                <LinearLayout
+                    style="@style/SettingRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#dddddd"
+                    android:gravity="center"
+                    android:padding="10dp">
+
+                    <Button
+                        android:id="@+id/button_menu_2"
+                        style="@style/Widget.AppCompat.Button.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_bottom_confirm_bg"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="@string/txt_menu_2"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    style="@style/SettingRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#dddddd"
+                    android:gravity="center"
+                    android:padding="10dp">
+
+                    <Button
+                        android:id="@+id/button_menu_3"
+                        style="@style/Widget.AppCompat.Button.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_bottom_confirm_bg"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="@string/txt_menu_3"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+                <LinearLayout
+                    style="@style/SettingRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#dddddd"
+                    android:gravity="center"
+                    android:padding="10dp">
+
+                    <Button
+                        android:id="@+id/button_menu_4"
+                        style="@style/Widget.AppCompat.Button.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_bottom_confirm_bg"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="@string/txt_menu_4"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+                <LinearLayout
+                    style="@style/SettingRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#dddddd"
+                    android:gravity="center"
+                    android:padding="10dp">
+
+                    <Button
+                        android:id="@+id/button_menu_5"
+                        style="@style/Widget.AppCompat.Button.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_bottom_confirm_bg"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="@string/txt_menu_5"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/SettingRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#dddddd"
+                    android:visibility="gone"
+                    android:gravity="center"
+                    android:padding="10dp">
+
+                    <Button
+                        android:id="@+id/button_history"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_bottom_confirm_bg"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="@string/txt_history"
+                        android:visibility="gone"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/SettingRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#dddddd"
+                    android:gravity="center"
+                    android:padding="10dp">
+
+                    <Button
+                        android:id="@+id/button_setting"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_bottom_confirm_bg"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="@string/txt_setup"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/SettingRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#dddddd"
+                    android:gravity="center"
+                    android:padding="10dp">
+
+                    <Button
+                        android:id="@+id/button_cancel"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/btn_bottom_confirm_bg"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="@string/txt_logout"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <!--            -->
+            <!--            <LinearLayout-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:background="@drawable/bg_item_white"-->
+            <!--                android:gravity="center"-->
+            <!--                android:padding="10dp">-->
+
+            <!--                <TextView-->
+            <!--                    style="@style/TextCommon"-->
+            <!--                    android:text="@string/txt_scan_result" />-->
+
+            <!--                <EditText-->
+            <!--                    android:id="@+id/tvScanResult"-->
+            <!--                    style="@style/TextEdit"-->
+            <!--                    android:layout_marginLeft="10dp"-->
+            <!--                    android:layout_marginRight="10dp"-->
+            <!--                    android:layout_weight="1"-->
+            <!--                    android:imeOptions="actionDone"-->
+            <!--                    android:gravity="center" />-->
+
+            <!--                <TextView-->
+            <!--                    android:id="@+id/btnPrint"-->
+            <!--                    style="@style/ButtonBase"-->
+            <!--                    android:layout_width="64dp"-->
+            <!--                    android:layout_gravity="center"-->
+            <!--                    android:text="打印" />-->
+
+            <!--            </LinearLayout>-->
+
+            <!--            <TextView-->
+            <!--                style="@style/TextTitle"-->
+            <!--                android:text="@string/txt_search_result" />-->
+
+            <!--            &lt;!&ndash;打印外面包一层，防止打印区域转图片后打印区域显示走位&ndash;&gt;-->
+            <!--            <LinearLayout-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:background="@drawable/bg_item_white"-->
+            <!--                android:gravity="center"-->
+            <!--                android:padding="10dp">-->
+
+            <!--                <LinearLayout-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content">-->
+
+            <!--                    <LinearLayout-->
+            <!--                        android:id="@+id/ll_print"-->
+            <!--                        android:layout_width="wrap_content"-->
+            <!--                        android:layout_height="wrap_content"-->
+            <!--                        android:background="@drawable/bg_print"-->
+            <!--                        android:orientation="vertical">-->
+
+            <!--                        <LinearLayout style="@style/PrintRow">-->
+
+            <!--                            <TextView-->
+            <!--                                style="@style/TextPrint"-->
+            <!--                                android:text="@string/txt_fosb_id" />-->
+
+            <!--                            <View style="@style/LineVertical" />-->
+
+            <!--                            <TextView-->
+            <!--                                android:id="@+id/txtFosbId"-->
+            <!--                                style="@style/TextPrintRight"-->
+            <!--                                android:text="19700896A"-->
+            <!--                                android:textSize="14sp"-->
+            <!--                                />-->
+            <!--&lt;!&ndash;                            android:textStyle="bold"&ndash;&gt;-->
+            <!--                        </LinearLayout>-->
+
+            <!--                        <View-->
+            <!--                            android:id="@+id/line"-->
+            <!--                            style="@style/LineHorizontal" />-->
+
+            <!--                        <LinearLayout style="@style/PrintRow">-->
+
+            <!--                            <TextView-->
+            <!--                                style="@style/TextPrint"-->
+            <!--                                android:text="@string/txt_dry_start" />-->
+
+            <!--                            <View style="@style/LineVertical" />-->
+
+            <!--                            <TextView-->
+            <!--                                android:id="@+id/txtDryStart"-->
+            <!--                                style="@style/TextPrintRight"-->
+            <!--                                android:text="2019/11/11 10:12:23" />-->
+            <!--                        </LinearLayout>-->
+
+            <!--                        <View-->
+            <!--                            android:id="@+id/line1"-->
+            <!--                            style="@style/LineHorizontal" />-->
+
+            <!--                        <LinearLayout style="@style/PrintRow">-->
+
+            <!--                            <TextView-->
+            <!--                                style="@style/TextPrint"-->
+            <!--                                android:text="@string/txt_dry_end" />-->
+
+            <!--                            <View style="@style/LineVertical" />-->
+
+            <!--                            <TextView-->
+            <!--                                android:id="@+id/txtDryEnd"-->
+            <!--                                style="@style/TextPrintRight"-->
+            <!--                                android:text="2019/11/11 10:12:23" />-->
+            <!--                        </LinearLayout>-->
+
+            <!--                        <View-->
+            <!--                            android:id="@+id/line2"-->
+            <!--                            style="@style/LineHorizontal" />-->
+
+            <!--                        <LinearLayout style="@style/PrintRow">-->
+
+            <!--                            <TextView-->
+            <!--                                style="@style/TextPrint"-->
+            <!--                                android:text="@string/txt_next_clean" />-->
+
+            <!--                            <View style="@style/LineVertical" />-->
+
+            <!--                            <TextView-->
+            <!--                                android:id="@+id/txtNextClean"-->
+            <!--                                style="@style/TextPrintRight"-->
+            <!--                                android:text="2019/11/11 10:12:23" />-->
+            <!--                        </LinearLayout>-->
+            <!--                    </LinearLayout>-->
+            <!--                </LinearLayout>-->
+            <!--            </LinearLayout>-->
+
+            <!--            <TextView-->
+            <!--                style="@style/TextTitle"-->
+            <!--                android:text="@string/txt_msg" />-->
+
+            <!--            <TextView-->
+            <!--                style="@style/TextCommon"-->
+            <!--                android:id="@+id/msg"-->
+            <!--                android:text="" />-->
+            <!--            <TextView-->
+            <!--                style="@style/TextTitle"-->
+            <!--                android:text="@string/txt_history" />-->
+
+            <!--            <LinearLayout-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="match_parent"-->
+            <!--                android:background="@drawable/bg_item_white"-->
+            <!--                android:orientation="vertical"-->
+            <!--                android:padding="10dp">-->
+
+            <!--                <TextView-->
+            <!--                    android:id="@+id/tv_no_history"-->
+            <!--                    style="@style/TextTitle"-->
+            <!--                    android:layout_width="match_parent"-->
+            <!--                    android:layout_height="match_parent"-->
+            <!--                    android:layout_gravity="center"-->
+            <!--                    android:text="@string/txt_no_history"-->
+            <!--                    android:textColor="@color/gray1" />-->
+
+            <!--                <android.support.v7.widget.RecyclerView-->
+            <!--                    android:id="@+id/lv_history"-->
+            <!--                    android:layout_width="match_parent"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:divider="@null"-->
+            <!--                    android:dividerHeight="0dp"-->
+            <!--                    android:visibility="visible" />-->
+
+            <!--            </LinearLayout>-->
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>

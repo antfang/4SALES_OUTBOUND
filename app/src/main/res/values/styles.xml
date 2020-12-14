@@ -1,0 +1,141 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="TextCommon">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="TextTitle" parent="TextCommon">
+        <item name="android:layout_margin">@dimen/padding_common</item>
+    </style>
+
+    <style name="TextSettingLeft" parent="TextCommon">
+        <item name="android:width">100dp</item>
+        <item name="android:gravity">left|center</item>
+    </style>
+
+    <style name="TextHistory" parent="TextSettingLeft">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:width">160dp</item>
+    </style>
+
+    <style name="ButtonBase" parent="TextCommon">
+        <item name="android:background">@drawable/bg_button</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="ButtonGreen" parent="TextCommon">
+        <item name="android:background">@drawable/bg_button</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="TextPrint" parent="TextCommon">
+        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_width">90dp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/colorPrint</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TextPrintRight" parent="TextPrint">
+        <item name="android:layout_width">140dp</item>
+    </style>
+
+    <style name="TextEdit" parent="TextCommon">
+        <item name="android:layout_height">24dp</item>
+        <item name="android:gravity">left|center</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:background">@null</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:imeOptions">actionNext</item>
+    </style>
+    <style name="Button_X" parent="TextCommon">
+        <item name="android:layout_width">34dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:text">X</item>
+        <item name="android:textColor">@color/gray1</item>
+    </style>
+    <style name="TextServerAddress" parent="TextEdit">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:maxLength">3</item>
+        <item name="android:gravity">center</item>
+        <item name="android:inputType">number</item>
+        <item name="android:digits">1234567890</item>
+    </style>
+
+    <style name="TitleBarText" parent="TextCommon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:gravity">center|right</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">@dimen/title_bar_btn_text_padding</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:maxWidth">@dimen/title_bar_main_text_margin</item>
+        <item name="android:minWidth">@dimen/title_bar_img_btn_width</item>
+    </style>
+
+    <style name="LineHorizontal">
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:background">@color/colorPrint</item>
+    </style>
+
+    <style name="LineVertical" parent="LineHorizontal">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">1dp</item>
+    </style>
+
+    <style name="PrintRow">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="SettingRow">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:gravity">left|center</item>
+        <item name="android:background">@drawable/bg_item_white</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+    </style>
+
+    <style name="TitleBarImageBtn">
+        <item name="android:layout_width">60dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:background">@null</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:paddingRight">0dp</item>
+    </style>
+
+    <!--自定义dialog背景全透明无边框theme -->
+    <style name="Dialog_Msg" parent="android:style/Theme.Dialog">
+        <!--背景颜色及和透明程度-->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!--是否去除标题 -->
+        <item name="android:windowNoTitle">true</item>
+        <!--是否去除边框-->
+        <item name="android:windowFrame">@null</item>
+        <!--是否浮现在activity之上-->
+        <item name="android:windowIsFloating">true</item>
+        <!--是否模糊-->
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+</resources>

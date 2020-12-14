@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#dddddd"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/includeTitle"
+            layout="@layout/update_location_title"></include>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#dddddd"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    android:scrollbars="vertical"
+                    tools:context=".MainActivity">
+
+                    <LinearLayout
+                        style="@style/SettingRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center">
+
+                        <TextView
+                            style="@style/TextCommon"
+                            android:text="Part Type:" />
+
+                        <Spinner
+                            android:id="@+id/main_part_type"
+                            style="@style/TextEdit"
+                            android:layout_width="186dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:imeOptions="actionDone"
+                            android:textAlignment="center" />
+
+                        <ImageButton
+                            android:id="@+id/main_search_type"
+                            android:layout_width="26dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            app:srcCompat="@android:drawable/ic_menu_search" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/SettingRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center">
+
+                        <TextView
+                            style="@style/TextCommon"
+                            android:text="@string/txt_carrier" />
+
+                        <EditText
+                            android:id="@+id/main_scan_id_edit"
+                            style="@style/TextEdit"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:imeOptions="actionDone"
+                            android:textAlignment="center" />
+
+                        <Button
+                            android:id="@+id/main_active_text"
+                            android:layout_width="73dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@color/main_blue_stroke_color"
+                            android:text="√"
+                            android:textColor="@color/white" />
+                    </LinearLayout>
+
+                    <com.bin.david.form.core.SmartTable
+                        android:id="@+id/main_table1_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="10dp">
+
+                    <Button
+                        android:id="@+id/main_create_part"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@color/main_blue_stroke_color"
+                        android:text="Create"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/SettingRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
+
+                    <TextView
+                        style="@style/TextCommon"
+                        android:text="@string/txt_carrier" />
+
+                    <EditText
+                        android:id="@+id/carr_id_edit"
+                        style="@style/TextEdit"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:imeOptions="actionDone"
+                        android:textAlignment="center" />
+
+                    <!--                <Button-->
+                    <!--                    android:id="@+id/step1"-->
+                    <!--                    android:layout_width="269dp"-->
+                    <!--                    android:layout_height="match_parent"-->
+                    <!--                    android:layout_gravity="center"-->
+                    <!--                    android:layout_weight="2"-->
+                    <!--                    android:background="@color/main_blue_stroke_color"-->
+                    <!--                    android:text=""-->
+                    <!--                    android:textColor="@color/white" />-->
+
+
+                </LinearLayout>
+                <!--            <TextView-->
+                <!--                style="@style/TextTitle"-->
+                <!--                android:text="@string/txt_search_result"-->
+                <!--                android:visibility="invisible"/>-->
+
+                <!--打印外面包一层，防止打印区域转图片后打印区域显示走位-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="10dp">
+
+
+                    <Button
+                        android:id="@+id/main_print_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@color/main_blue_stroke_color"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="Print"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <!--        <LinearLayout-->
+                <!--                android:layout_width="match_parent"-->
+                <!--                android:layout_height="wrap_content"-->
+                <!--                android:background="@drawable/bg_item_white"-->
+                <!--                android:gravity="center"-->
+                <!--                android:padding="10dp">-->
+
+                <!--                <LinearLayout-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content">-->
+
+                <!--                    <LinearLayout-->
+                <!--                        android:id="@+id/ll_print"-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:background="@drawable/bg_print"-->
+                <!--                        android:orientation="vertical">-->
+
+                <!--                        <LinearLayout style="@style/PrintRow">-->
+
+                <!--                            <TextView-->
+                <!--                                style="@style/TextPrint"-->
+                <!--                                android:text="@string/txt_fosb_id" />-->
+
+                <!--                            <View style="@style/LineVertical" />-->
+
+                <!--                            <TextView-->
+                <!--                                android:id="@+id/txtFosbId"-->
+                <!--                                style="@style/TextPrintRight"-->
+                <!--                                android:text="19700896A"-->
+                <!--                                android:textSize="14sp" />-->
+                <!--                            &lt;!&ndash;                            android:textStyle="bold"&ndash;&gt;-->
+                <!--                        </LinearLayout>-->
+
+                <!--                        <View-->
+                <!--                            android:id="@+id/line"-->
+                <!--                            style="@style/LineHorizontal" />-->
+
+                <!--                        <LinearLayout style="@style/PrintRow">-->
+
+                <!--                            <TextView-->
+                <!--                                style="@style/TextPrint"-->
+                <!--                                android:text="@string/txt_dry_start" />-->
+
+                <!--                            <View style="@style/LineVertical" />-->
+
+                <!--                            <TextView-->
+                <!--                                android:id="@+id/txtDryStart"-->
+                <!--                                style="@style/TextPrintRight"-->
+                <!--                                android:text="2019/11/11 10:12:23" />-->
+                <!--                        </LinearLayout>-->
+
+                <!--                        <View-->
+                <!--                            android:id="@+id/line1"-->
+                <!--                            style="@style/LineHorizontal" />-->
+
+                <!--                        <LinearLayout style="@style/PrintRow">-->
+
+                <!--                            <TextView-->
+                <!--                                style="@style/TextPrint"-->
+                <!--                                android:text="@string/txt_dry_end" />-->
+
+                <!--                            <View style="@style/LineVertical" />-->
+
+                <!--                            <TextView-->
+                <!--                                android:id="@+id/txtDryEnd"-->
+                <!--                                style="@style/TextPrintRight"-->
+                <!--                                android:text="2019/11/11 10:12:23" />-->
+                <!--                        </LinearLayout>-->
+
+                <!--                        <View-->
+                <!--                            android:id="@+id/line2"-->
+                <!--                            style="@style/LineHorizontal" />-->
+
+                <!--                        <LinearLayout style="@style/PrintRow">-->
+
+                <!--                            <TextView-->
+                <!--                                style="@style/TextPrint"-->
+                <!--                                android:text="@string/txt_next_clean" />-->
+
+                <!--                            <View style="@style/LineVertical" />-->
+
+                <!--                            <TextView-->
+                <!--                                android:id="@+id/txtNextClean"-->
+                <!--                                style="@style/TextPrintRight"-->
+                <!--                                android:text="2019/11/11 10:12:23" />-->
+                <!--                        </LinearLayout>-->
+                <!--                    </LinearLayout>-->
+                <!--                </LinearLayout>-->
+                <!--            </LinearLayout>-->
+
+                <!--        <TextView-->
+                <!--                style="@style/TextTitle"-->
+                <!--                android:text="@string/txt_msg" />-->
+
+                <!--            <TextView-->
+                <!--                android:id="@+id/msg"-->
+                <!--                style="@style/TextCommon"-->
+                <!--                android:text="" />-->
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</layout>

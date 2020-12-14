@@ -1,0 +1,100 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.sufang.scanner.Sales_Outbound"
+        minSdkVersion 23
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+//    buildTypes {
+//        release {
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//        }
+//    }
+    signingConfigs {
+        debugConfig {
+            // 正式签名路径
+            storeFile file('../sales_outbound.jks')
+            // 正式签名密码
+            storePassword "133245"
+            // 正式签名别名
+            keyAlias "sales_outbound"
+            // 正式签名别名密码
+            keyPassword "133245"
+        }
+        release {
+            storeFile file('../sales_outbound.jks')
+            storePassword "133245"
+            keyAlias 'sales_outbound'
+            keyPassword "133245"
+        }
+    }
+    buildTypes {
+        debug {
+            // 开发时用正式签名
+            signingConfig signingConfigs.release
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // 打包上线时也用正式签名
+            signingConfig signingConfigs.release
+        }
+    }
+    android.applicationVariants.all {
+        variant ->
+            variant.outputs.all {
+                outputFileName = "sales_outbound_"+ buildType.name + ".apk"
+//                outputFileName = "Clean_App_"+ buildType.name + "_v${defaultConfig.versionName}-${releaseTime()}.apk"
+            }
+    }
+    android{compileOptions.encoding="utf-8"}
+    android {
+        lintOptions {
+            checkReleaseBuilds false
+            abortOnError false
+        }
+    }
+
+    dataBinding {
+        enabled = true
+    }
+}
+
+greendao {
+    schemaVersion 5
+}
+
+dependencies {
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    api 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    // 吐司工具类
+    implementation 'com.hjq:toast:8.0'
+    // 对话框工具类
+    implementation 'com.github.f0ris.sweetalert:library:1.5.1'
+    // greenDao数据库
+    implementation 'org.greenrobot:greendao:3.2.2'
+    // greenDao数据库升级辅助类
+    implementation 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v2.0.3'
+    // greenDao数据库加密依赖包
+    implementation 'net.zetetic:android-database-sqlcipher:3.5.6'
+    //SmartTable 表格
+    implementation  'com.github.huangyanbin:SmartTable:2.2.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(dir: 'gradle\\wrapper', include: ['*.aar', '*.jar'], exclude: [])
+    implementation fileTree(dir: 'gradle\\wrapper', include: ['*.aar', '*.jar'], exclude: [])
+    implementation fileTree(dir: 'gradle\\wrapper', include: ['*.aar', '*.jar'], exclude: [])
+    implementation files('libs\\ksoap2-android-assembly-3.6.4-jar-with-dependencies.jar')
+
+}

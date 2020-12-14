@@ -1,0 +1,8 @@
+<resources>
+    <dimen name="padding_common">10dp</dimen>
+
+    <dimen name="title_bar_main_text_margin">80dp</dimen>
+    <dimen name="title_bar_btn_text_padding">20dp</dimen>
+    <dimen name="title_bar_btn_text_size">16sp</dimen>
+    <dimen name="title_bar_img_btn_width">80dp</dimen>
+</resources>

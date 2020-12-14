@@ -1,0 +1,1 @@
+<?xml version="1.0" standalone="no"?><SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Body><SOAP-ENV:Fault xmlns:wsa="http://www.w3.org/2005/08/addressing"><faultcode>SOAP-ENV:Server</faultcode><faultstring>No operation found</faultstring></SOAP-ENV:Fault></SOAP-ENV:Body></SOAP-ENV:Envelope>

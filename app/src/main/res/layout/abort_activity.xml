@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#dddddd"
+        android:orientation="vertical"
+        tools:context=".AbortActivity">
+        <include
+            android:id="@+id/includeTitle_abort"
+            layout="@layout/title_bar"></include>
+        <LinearLayout
+            style="@style/SettingRow"
+            android:background="#dddddd">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textAlignment="textEnd" />
+        </LinearLayout>
+        <LinearLayout style="@style/SettingRow">
+
+            <TextView
+                style="@style/TextSettingLeft"
+                android:text="Service Address" />
+
+            <EditText
+                android:id="@+id/service_address"
+                style="@style/TextEdit"
+                android:imeOptions="actionDone"
+                android:text="" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/version_abort"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"  />
+
+        <LinearLayout style="@style/SettingRow">
+            <Button
+                android:id="@+id/btn_update_abort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/btn_bottom_confirm_bg"
+                android:text="@string/txt_print_update"
+                android:textColor="@color/white" />
+        </LinearLayout>
+    </LinearLayout>
+</layout>
