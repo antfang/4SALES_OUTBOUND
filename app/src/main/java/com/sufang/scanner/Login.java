@@ -27,18 +27,12 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Handler;
-
-import com.hjq.toast.ToastUtils;
 import com.sufang.util.CommonUtil;
 import com.sufang.util.PreferencesUtils;
-import com.miracom.Client.Client;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Locale;
@@ -50,6 +44,7 @@ public class Login extends AppCompatActivity {
     private EditText mUsername;
     private EditText mPassWord;
     private Button login;
+    private CheckBox savePass;
     private Button cancel;
     private RadioButton chinesebtn;
     private RadioButton englishbtn;
@@ -65,27 +60,39 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.login);
         login = (Button) findViewById(R.id.login_button);
+        savePass = (CheckBox) findViewById(R.id.savePass);
         cancel = (Button) findViewById(R.id.login_cancel);
         mUsername = (EditText) findViewById(R.id.login_name);
         mPassWord = (EditText) findViewById(R.id.login_password);
         englishbtn = (RadioButton) findViewById(R.id.englistbtn);
         chinesebtn = (RadioButton) findViewById(R.id.chinesebtn);
         radiogroup = (RadioGroup) findViewById(R.id.radiogroup);
-        if (Menu.Client == null||!Menu.Client.isConnected()) {
+        startForm_psw();
+        savePass.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (savePass.isChecked()) {
+                    preferencesUtils.commitString(Constant.KEY_SAVEPSW, mUsername.getText() + ":" + mPassWord.getText());
+                } else {
+                    mPassWord.setText("");
+                    preferencesUtils.commitString(Constant.KEY_SAVEPSW, mUsername.getText().toString());
+                }
+            }
+        });
+        if (Menu.Client  == null || !Menu.Client.isConnected()) {
             Menu.initClient(null);
-            try{Thread.sleep(2000);}
-            catch(Exception ex)
-            {
+            try {
+                Thread.sleep(2000);
+            } catch (Exception ex) {
             }
         } else if (Menu.Client.isConnected()) {
         } else {
             Menu.Client.initMsgHandler();
-            try{Thread.sleep(1000);}
-            catch(Exception ex)
-            {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception ex) {
             }
         }
         //读取SharedPreferences数据，初始化语言设置
@@ -122,7 +129,7 @@ public class Login extends AppCompatActivity {
                         psw = "123456";
                         preferencesUtils.commitString(Constant.KEY_SETTINH_PSW, "123456");
                     }
-                    if (password.equals(psw)||password.equals("987321")) {
+                    if (password.equals(psw) || password.equals("987321")) {
                         Toast.makeText(Login.this, R.string.login_success, Toast.LENGTH_SHORT).show();
                         OpenMenu();
                     } else {
@@ -131,16 +138,16 @@ public class Login extends AppCompatActivity {
                 } else {
                     if (Menu.Client == null) {
                         Menu.initClient(null);
-                        try{Thread.sleep(2000);}
-                        catch(Exception ex)
-                        {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (Exception ex) {
                         }
                     } else if (Menu.Client.isConnected()) {
                     } else {
                         Menu.Client.initMsgHandler();
-                        try{Thread.sleep(2000);}
-                        catch(Exception ex)
-                        {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (Exception ex) {
                         }
                     }
                     if (Menu.Client.isConnected()) {
@@ -165,6 +172,7 @@ public class Login extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     SetLanguage(0);
+                    preferencesUtils.commitString(Constant.KEY_LANUAGE, "3");
                 }
             }
         });
@@ -173,6 +181,7 @@ public class Login extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     SetLanguage(1);
+                    preferencesUtils.commitString(Constant.KEY_LANUAGE, "1");
                 }
             }
         });
@@ -391,12 +400,30 @@ public class Login extends AppCompatActivity {
 
     private void OpenMenu() {
         //打开主页面
+        if (savePass.isChecked()) {
+            preferencesUtils.commitString(Constant.KEY_SAVEPSW, mUsername.getText() + ":" + mPassWord.getText());
+        } else {
+            preferencesUtils.commitString(Constant.KEY_SAVEPSW, mUsername.getText().toString());
+        }
         Intent intent = new Intent(Login.this, com.sufang.scanner.Menu.class);
         Menu.USER_NAME = username;
         Menu.PASSWORD = password;
         startActivity(intent);
-        mUsername.setText("");
-        mPassWord.setText("");
+        startForm_psw();
+    }
+
+    private void startForm_psw() {
+
+        if (preferencesUtils.getString(Constant.KEY_SAVEPSW).split(":").length > 1) {
+            savePass.setChecked(true);
+            mUsername.setText(preferencesUtils.getString(Constant.KEY_SAVEPSW).split(":")[0]);
+            String ps = preferencesUtils.getString(Constant.KEY_SAVEPSW).split(":")[1];
+            mPassWord.setText(ps);
+        } else {
+            savePass.setChecked(false);
+            mUsername.setText(preferencesUtils.getString(Constant.KEY_SAVEPSW).split(":")[0]);
+            mPassWord.setText("");
+        }
     }
 
     private Handler mHandler = new Handler();

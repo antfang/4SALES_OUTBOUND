@@ -319,21 +319,21 @@ public class HistoryActivity extends AppCompatActivity  {
     protected void onResume() {
         super.onResume();
         IS_FIRST_PRINT = preferencesUtils.getBoolean(Constant.KEY_FIRST_PRINT);
-//        if (!isSettingOk()) {
-//            SweetAlertDialog dialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-//                    .setTitleText(getString(R.string.txt_alert_title))
-//                    .setContentText(getString(R.string.txt_alert_message))
-//                    .setConfirmText(getString(R.string.txt_ok))
-//                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-//                        @Override
-//                        public void onClick(SweetAlertDialog sweetAlertDialog) {
-//                            sweetAlertDialog.dismiss();
-////                            toSetting();
-//                        }
-//                    });
-//            dialog.setCancelable(false);
-//            dialog.show();
-//        }
+        if (!isSettingOk()) {
+            SweetAlertDialog dialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+                    .setTitleText(getString(R.string.txt_alert_title))
+                    .setContentText(getString(R.string.txt_alert_message))
+                    .setConfirmText(getString(R.string.txt_ok))
+                    .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                        @Override
+                        public void onClick(SweetAlertDialog sweetAlertDialog) {
+                            sweetAlertDialog.dismiss();
+                            finish();
+                        }
+                    });
+            dialog.setCancelable(false);
+            dialog.show();
+        }
     }
 
     private boolean isSettingOk() {

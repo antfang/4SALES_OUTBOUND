@@ -172,10 +172,20 @@ public class Menu extends AppCompatActivity {
             menu_button_3.setVisibility(View.VISIBLE);
         }
         if (!preferencesUtils.getBoolean(Constant.MENU_4)) {
-            history.setVisibility(View.GONE);
+            menu_button_4.setVisibility(View.GONE);
         } else {
-            history.setVisibility(View.VISIBLE);
+            menu_button_4.setVisibility(View.VISIBLE);
         }
+        if (!preferencesUtils.getBoolean(Constant.MENU_5)) {
+            menu_button_5.setVisibility(View.GONE);
+        } else {
+            menu_button_5.setVisibility(View.VISIBLE);
+        }
+//        if (!preferencesUtils.getBoolean(Constant.MENU_4)) {
+//            history.setVisibility(View.GONE);
+//        } else {
+//            history.setVisibility(View.VISIBLE);
+//        }
     }
 
     private void toSetting() {

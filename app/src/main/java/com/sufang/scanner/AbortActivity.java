@@ -30,7 +30,7 @@ public class AbortActivity extends AppCompatActivity {
                 case GET_VERSION :
                     if(preferencesUtils.getString(Constant.KEY_UPDATE_SERVICE).isEmpty())
                     {
-                        showMsg("Please Enter address.eg.122.51.33.156");
+                        showMsg("请输入地址.eg.10.10.88.120");
                         break;
                     }
                     preferencesUtils.commitString(Constant.KEY_UPDATE_SERVICE,  binding.serviceAddress.getText().toString());
@@ -68,9 +68,9 @@ public class AbortActivity extends AppCompatActivity {
                 finish();
             }
         });
-        String UPDATE_STR = "V 1.0.0";//"V"+BuildConfig.VERSION_NAME +"\r\n"+"1、打印条码码位增加到24码，其中字母算两位，数字算一位。";
+        String UPDATE_STR = "V"+BuildConfig.VERSION_NAME ;//"V"+BuildConfig.VERSION_NAME +"\r\n"+"1、打印条码码位增加到24码，其中字母算两位，数字算一位。";
         binding.versionAbort.setText(UPDATE_STR);
-        binding.serviceAddress.setText(preferencesUtils.getString(Constant.KEY_UPDATE_SERVICE).isEmpty()?"122.51.33.156":preferencesUtils.getString(Constant.KEY_UPDATE_SERVICE));
+        binding.serviceAddress.setText(preferencesUtils.getString(Constant.KEY_UPDATE_SERVICE).isEmpty()?"10.10.88.120":preferencesUtils.getString(Constant.KEY_UPDATE_SERVICE));
         preferencesUtils.commitString(Constant.KEY_UPDATE_SERVICE,  binding.serviceAddress.getText().toString());
         binding.btnUpdateAbort.setOnClickListener(new View.OnClickListener() {
             @Override

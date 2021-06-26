@@ -14,6 +14,7 @@ import com.bin.david.form.core.SmartTable;
 import com.bin.david.form.core.TableConfig;
 import com.bin.david.form.data.column.Column;
 import com.bin.david.form.data.format.draw.ImageResDrawFormat;
+import com.bin.david.form.data.format.sequence.BaseSequenceFormat;
 import com.bin.david.form.data.table.TableData;
 import com.bin.david.form.listener.OnColumnItemClickListener;
 import com.sufang.model.DropModel;
@@ -147,6 +148,12 @@ public class TableDialog extends Dialog {
         TableConfig config = table_smart.getConfig();
         config.setShowTableTitle(false);
         config.setShowXSequence(false);
+        tableData.setYSequenceFormat(new BaseSequenceFormat(){
+            @Override
+            public String format(Integer integer) {
+                return String.valueOf(integer-1);
+            }
+        });
     }
     /**
      * 初始化界面控件

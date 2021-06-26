@@ -127,7 +127,6 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
             super.handleMessage(msg);
             try {
                 if (!isSettingOk()) {
-                    onMiddlewareFail(getString(R.string.txt_alert_message));
                     return;
                 }
                 if (Menu.Client == null) {
@@ -177,11 +176,11 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                         binding.lotIdManual.setTextColor(Color.BLACK);
                         if (lotColor == Color.GREEN) {
                             Carton_NO = binding.cartonNoManual.getText().toString();
-                            Lot_Id=binding.lotIdManual.getText().toString();
+                            Lot_Id = binding.lotIdManual.getText().toString();
                         } else {
                             Carton_NO = "";
                             Lot_No = "";
-                            Lot_Id="";
+                            Lot_Id = "";
                             binding.cartonNoManual.setText("");
                         }
                         break;
@@ -233,7 +232,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                     case CLEAR_CONTROL:
                         Focuse_Control(SMALL_LOT);
                         onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.WHITE, null);
-                         onMiddlewareChangeColor(CUST_PART_NO, null, Color.WHITE, null);
+                        onMiddlewareChangeColor(CUST_PART_NO, null, Color.WHITE, null);
                         Cust_Part_No = "";
                         Carton_NO = "";
                         Lot_No = "";
@@ -246,10 +245,10 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                         binding.cartonNoManual.setText("");
                         break;
                     case CLEAR_CONTROL2:
-                       // Focuse_Control(DELIVERY_NO);
+                        // Focuse_Control(DELIVERY_NO);
                         onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.WHITE, null);
                         onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.WHITE, null);
-                          onMiddlewareChangeColor(CUST_PART_NO, null, Color.WHITE, null);
+                        onMiddlewareChangeColor(CUST_PART_NO, null, Color.WHITE, null);
                         Cust_Part_No = "";
                         Carton_NO = "";
                         Lot_No = "";
@@ -306,7 +305,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                         binding.palletId2Manual.setText("");
                         onMiddlewareChangeColor(LOT_COLOR2, null, Color.WHITE, null);
                         if (binding.lotIdManualPrint.getText().toString().isEmpty()) {
-                            show_alert("Please enter Lot ID");
+                            show_alert("请输入 Lot ID");
                             Focuse_Control(LOT_ID2);
                             return;
                         }
@@ -333,7 +332,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                         }
                         break;
                     case SHOWALERT:
-                        final String showalert_msg =  msg.obj.toString();
+                        final String showalert_msg = msg.obj.toString();
                         SweetAlertDialog dialog = new SweetAlertDialog(Activity_Manual_Operation.this, SweetAlertDialog.NORMAL_TYPE)
                                 .setTitleText(getString(R.string.txt_alert_title))
                                 .setContentText(showalert_msg)
@@ -369,15 +368,15 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                     case QUERY_CARTON_2:
                         Carton_NO = "";
                         Lot_No = "";
-                        Small_Lot="";
+                        Small_Lot = "";
                         binding.cartonNoManual.setText("");
                         if (binding.deliveryNoManual.getText().toString().isEmpty()) {
-                            onMiddlewareFail("Enter Delivery NO.");
+                            onMiddlewareFail("请输入 Delivery NO.");
                             Focuse_Control(DELIVERY_NO);
                             return;
                         }
                         if (binding.lotIdManual.getText().toString().isEmpty()) {
-                            onMiddlewareFail("Enter Lot ID.");
+                            onMiddlewareFail("请输入 Lot ID.");
                             Focuse_Control(SMALL_LOT);
                             return;
                         }
@@ -385,7 +384,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                         Small_Lot = binding.lotIdManual.getText().toString();
                         boolean flag = false;
                         if (Lot_List == null || Lot_List.size() <= 0 || Lot_List.get(0).getLot_id().isEmpty()) {
-                            onMiddlewareFail("This Delivery No have not lot List.");
+                            onMiddlewareFail("单据中不存在Lot List.");
                             onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.RED, null);
                             return;
                         } else {
@@ -408,7 +407,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                             public void run() {
                                 try {
                                     String res = Menu.Client.GetCartonNo_2(Delivery_No, Small_Lot);
-                                        //显示carton_no
+                                    //显示carton_no
                                     Set_Carton_No(res);
                                     Focuse_Control(BIG_LOT);
                                     onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.GREEN, null);
@@ -423,7 +422,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                     case GET_DNLOTID_1:
                         //onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.WHITE, null);
                         if (binding.deliveryNoManual.getText().toString().isEmpty()) {
-                            onMiddlewareFail("Enter Delivery NO.");
+                            onMiddlewareFail("请输入 Delivery NO.");
                             Focuse_Control(DELIVERY_NO);
                             return;
                         }
@@ -483,7 +482,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                                 @Override
                                 public void run() {
                                     try {
-                                        Boolean res = Menu.Client.Insert_lot_into_pallet_7(Delivery_No,Pallet_No, "", Lot_Id, Carton_NO,Cust_Part_No);
+                                        Boolean res = Menu.Client.Insert_lot_into_pallet_7(Delivery_No, Pallet_No, "", Lot_Id, Carton_NO, Cust_Part_No);
                                         //onMiddlewareChangeColor(CUST_PART_NO_COLOR, null, Color.GREEN, null);
                                         String erp_res = Menu.Client.UpdPalletNo_3(Delivery_No, Lot_No, Pallet_No);
                                         if (erp_res.equals("Y")) {
@@ -506,7 +505,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                     case UPDPALLETNO_3:
                         onMiddlewareChangeColor(PALLET_CANCEL_COLOR, null, Color.WHITE, null);
                         if (binding.cancelPalletTxtManual.getText().toString().isEmpty()) {
-                            show_alert("Please ,Enter Pallet No.");
+                            show_alert("请输入 Pallet No.");
                             return;
                         }
                         Pallet_No = binding.cancelPalletTxtManual.getText().toString();
@@ -518,7 +517,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                                         String res = Menu.Client.UpdPalletNo2_4(Pallet_No);
                                         if (res.equals("Y"))
                                             onMiddlewareChangeColor(PALLET_CANCEL_COLOR, null, Color.GREEN, null);
-                                        else{
+                                        else {
 
                                             onMiddlewareChangeColor(PALLET_CANCEL_COLOR, null, Color.RED, null);
                                         }
@@ -534,7 +533,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                     case CANCEL_PALLET_8:
                         onMiddlewareChangeColor(PALLET_CANCEL_COLOR, null, Color.WHITE, null);
                         if (binding.cancelPalletTxtManual.getText().toString().isEmpty()) {
-                            show_alert("Please ,Enter Pallet No.");
+                            show_alert("请输入 Pallet No.");
                             return;
                         }
                         Pallet_No = binding.cancelPalletTxtManual.getText().toString();
@@ -587,22 +586,20 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                 if (binding.palletNoManual.hasFocus()) {//扫描的是ScanId
                     binding.palletNoManual.setText(s);
                     Focuse_Control(DELIVERY_NO);
-                    Pallet_No= s;
+                    Pallet_No = s;
                 } else if (binding.deliveryNoManual.hasFocus()) {
                     binding.deliveryNoManual.setText(s);
                     Get_DNLotId_1();
                 } else if (binding.lotIdManual.hasFocus()) {
                     binding.lotIdManual.setText(s);
                     Query_Carton_2();
-                }else if (binding.lotId2Manual.hasFocus()) {
+                } else if (binding.lotId2Manual.hasFocus()) {
                     binding.lotId2Manual.setText(s);
                     Check_Lot();
-                }  else if (binding.custPartNoManual.hasFocus()) {
+                } else if (binding.custPartNoManual.hasFocus()) {
                     binding.custPartNoManual.setText(s);
                     Verify_Cust_Part_No_3();
-                }
-                else if(binding.lotIdManualPrint.hasFocus())
-                {
+                } else if (binding.lotIdManualPrint.hasFocus()) {
                     binding.lotIdManualPrint.setText(s);
                     Reprint_9();
                 }
@@ -645,7 +642,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
         //打印浓度
         int print_setting = 25;
         try {
-            print_setting =  preferencesUtils.getStringToInt(Constant.KEY_PRINT_SETTING,25) ;
+            print_setting = preferencesUtils.getStringToInt(Constant.KEY_PRINT_SETTING, 25);
         } catch (Exception ex) {
         }
         int concentration = print_setting;
@@ -681,7 +678,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
         if (ScanCodeType == 1) {
             if (str_count > 16 && str_count <= 26) {
                 mWidth = 390;//
-                left = 20 ;
+                left = 20;
             } else if (str_count > 26) {
                 mWidth = 390;
                 concentration = 1;
@@ -698,10 +695,10 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
         if (ScanCodeType == 2) {
             mWidth = 150;
             mHeight = 150;
-            left =  50;
+            left = 50;
             flag = false;
         }
-        mBitmap = BarcodeCreater.creatBarcode(this, result, mWidth, mHeight,flag , ScanCodeType, _s_45);
+        mBitmap = BarcodeCreater.creatBarcode(this, result, mWidth, mHeight, flag, ScanCodeType, _s_45);
         if (isprint) {
             byte[] printData = BitmapTools.bitmap2PrinterBytes(mBitmap);
             mPrinter.addBmp(concentration, left, mBitmap.getWidth(), mBitmap.getHeight(), printData);
@@ -735,18 +732,22 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
         Message msg = handler.obtainMessage(CLEAR_CONTROL2);
         msg.sendToTarget();
     }
+
     private void Cancel_Pallet_8() {
         Message msg = handler.obtainMessage(CANCEL_PALLET_8);
         msg.sendToTarget();
     }
+
     private void UpdPalletNo3() {
         Message msg = handler.obtainMessage(UPDPALLETNO_3);
         msg.sendToTarget();
     }
+
     private void Verify_Cust_Part_No_3() {
         Message msg = handler.obtainMessage(VERIFY_CUST_PART_NO_3);
         msg.sendToTarget();
     }
+
     private void Check_Lot() {
         Message msg = handler.obtainMessage(CHECK_LOT);
         msg.sendToTarget();
@@ -757,6 +758,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
         Message msg = handler.obtainMessage(REPRINT_9);
         msg.sendToTarget();
     }
+
     private void Get_DNLotId_1() {
         onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.WHITE, null);
         Message msg = handler.obtainMessage(GET_DNLOTID_1);
@@ -768,8 +770,6 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
         Message msg = handler.obtainMessage(QUERY_CARTON_2);
         msg.sendToTarget();
     }
-
-
 
 
     public void Set_Pallet(String pallet_str) {
@@ -784,11 +784,13 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
         msg.obj = control_id;
         msg.sendToTarget();
     }
+
     private void Set_Palled_Id(String id) {
         Message msg = handler.obtainMessage(SET_PALLED_ID);
         msg.obj = id;
         msg.sendToTarget();
     }
+
     private void Set_Carton_No(String carton) {
         Message msg = handler.obtainMessage(SET_CARTON_NO);
         msg.obj = carton;
@@ -815,7 +817,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
                             sweetAlertDialog.dismiss();
-                            toSetting();
+                            finish();
                         }
                     });
             dialog.setCancelable(false);
@@ -1094,7 +1096,30 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
         binding.includeTitle.leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                final String showalert_msg = "是否退出Manual。";
+                SweetAlertDialog dialog = new SweetAlertDialog(Activity_Manual_Operation.this, SweetAlertDialog.NORMAL_TYPE)
+                        .setTitleText(getString(R.string.txt_alert_title))
+                        .setContentText(showalert_msg)
+                        .setConfirmText(getString(R.string.txt_ok))
+                        .setCancelText("取消")
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismiss();
+                            }
+                        })
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                try {
+                                    sweetAlertDialog.dismiss();
+                                    finish();
+                                }catch(Exception ex) {
+
+                                }
+                            }
+                        });
+                dialog.show();
             }
         });
         binding.includeTitle.titleRefreshButton.setOnClickListener(new View.OnClickListener() {
@@ -1132,7 +1157,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
             public void onClick(View v) {
                 binding.custPartNoManual.setText("");
                 Focuse_Control(CUST_PART_NO);
-                onMiddlewareChangeColor(CUST_PART_NO_COLOR,null,Color.WHITE,null);
+                onMiddlewareChangeColor(CUST_PART_NO_COLOR, null, Color.WHITE, null);
             }
         });
         binding.Action1Manual.setOnClickListener(new View.OnClickListener() {
@@ -1158,7 +1183,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
             public void onClick(View v) {
                 binding.lotId2Manual.setText("");
                 Focuse_Control(BIG_LOT);
-                onMiddlewareChangeColor(BIG_LOT_COLOR,null,Color.WHITE,null);
+                onMiddlewareChangeColor(BIG_LOT_COLOR, null, Color.WHITE, null);
             }
         });
         binding.Action4Manual.setOnClickListener(new View.OnClickListener() {
@@ -1171,7 +1196,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                    onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.WHITE, null);
+                onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.WHITE, null);
 
             }
 
@@ -1188,7 +1213,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
         binding.lotIdManual.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-              onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.WHITE, null);
+                onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.WHITE, null);
             }
 
             @Override
@@ -1205,7 +1230,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
         binding.custPartNoManual.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    onMiddlewareChangeColor(CUST_PART_NO_COLOR, null, Color.WHITE, null);
+                onMiddlewareChangeColor(CUST_PART_NO_COLOR, null, Color.WHITE, null);
             }
 
             @Override
@@ -1221,7 +1246,7 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
         binding.lotId2Manual.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    onMiddlewareChangeColor(BIG_LOT_COLOR, null, Color.WHITE, null);
+                onMiddlewareChangeColor(BIG_LOT_COLOR, null, Color.WHITE, null);
             }
 
             @Override
@@ -1255,11 +1280,11 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
         binding.buttonPrintManual.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(binding.palletId2Manual.getText().toString().isEmpty()){
+                if (binding.palletId2Manual.getText().toString().isEmpty()) {
                     show_alert("请查询Pallet No.");
                     return;
                 }
-                printScanResult(binding.palletId2Manual.getText().toString(),true);
+                printScanResult(binding.palletId2Manual.getText().toString(), true);
             }
         });
         binding.Action6Manual.setOnClickListener(new View.OnClickListener() {
@@ -1377,7 +1402,11 @@ public class Activity_Manual_Operation extends AppCompatActivity implements Midd
                 break;
         }
     }
-
+    // 捕获返回键的方法2
+    @Override
+    public void onBackPressed() {
+        binding.includeTitle.leftButton.performClick();
+    }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 

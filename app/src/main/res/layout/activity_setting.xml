@@ -13,7 +13,9 @@
         android:background="#dddddd"
         android:orientation="vertical">
 
-        <include android:id="@+id/includeTitle" layout="@layout/title_bar"></include>
+        <include
+            android:id="@+id/includeTitle"
+            layout="@layout/title_bar"></include>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -71,10 +73,10 @@
                 <EditText
                     android:id="@+id/etServerPort"
                     style="@style/TextServerAddress"
-                    android:gravity="left|center"
                     android:layout_width="160dp"
-                    android:maxLength="5"
+                    android:gravity="left|center"
                     android:imeOptions="actionNext"
+                    android:maxLength="5"
                     android:text="20101" />
 
             </LinearLayout>
@@ -93,6 +95,22 @@
                     android:text="MPB1" />
 
             </LinearLayout>
+
+            <LinearLayout style="@style/SettingRow">
+
+                <TextView
+                    style="@style/TextSettingLeft"
+                    android:text="@string/txt_factory" />
+
+                <EditText
+                    android:id="@+id/factoryId"
+                    style="@style/TextEdit"
+                    android:hint="WE1"
+                    android:imeOptions="actionNext"
+                    android:text="" />
+
+            </LinearLayout>
+
             <LinearLayout
                 style="@style/SettingRow"
                 android:layout_width="match_parent"
@@ -128,6 +146,7 @@
                     android:text="1" />
 
             </LinearLayout>
+
             <LinearLayout
                 style="@style/SettingRow"
                 android:layout_width="match_parent"
@@ -147,6 +166,7 @@
                     android:inputType="number"
                     android:visibility="invisible" />
             </LinearLayout>
+
             <LinearLayout style="@style/SettingRow">
 
                 <TextView
@@ -157,10 +177,11 @@
                     android:id="@+id/settingPsw"
                     style="@style/TextEdit"
                     android:imeOptions="actionNext"
-                    android:text=""
-                    android:inputType="textPassword"/>
+                    android:inputType="textPassword"
+                    android:text="" />
 
             </LinearLayout>
+
             <LinearLayout style="@style/SettingRow">
 
                 <TextView
@@ -171,29 +192,33 @@
                     android:id="@+id/checkSettingPsw"
                     style="@style/TextEdit"
                     android:imeOptions="actionDone"
-                    android:text=""
-                    android:inputType="textPassword"/>
+                    android:inputType="textPassword"
+                    android:text="" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-            <CheckBox
-                android:id="@+id/setting_menu_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/txt_menu_1" />
-            <CheckBox
-                android:id="@+id/setting_menu_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/txt_menu_2" />
+
+                <CheckBox
+                    android:id="@+id/setting_menu_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/txt_menu_1" />
+
+                <CheckBox
+                    android:id="@+id/setting_menu_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/txt_menu_2" />
+
                 <CheckBox
                     android:id="@+id/setting_menu_3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/txt_menu_3" />
+
                 <CheckBox
                     android:id="@+id/setting_menu_4"
                     android:layout_width="wrap_content"
@@ -213,23 +238,20 @@
             </LinearLayout>
 
 
+        </LinearLayout>
+
+        <LinearLayout style="@style/SettingRow">
 
 
+            <TextView
+                android:id="@+id/settingBtnSave"
+                style="@style/ButtonBase"
+                android:layout_width="395dp"
+                android:layout_gravity="center"
+                android:text="@string/txt_save"
+                android:visibility="visible" />
 
 
         </LinearLayout>
-    <LinearLayout style="@style/SettingRow">
-
-
-        <TextView
-            android:id="@+id/settingBtnSave"
-            style="@style/ButtonBase"
-            android:layout_width="395dp"
-            android:layout_gravity="center"
-            android:text="@string/txt_save"
-            android:visibility="visible" />
-
-
-    </LinearLayout>
     </LinearLayout>
 </layout>

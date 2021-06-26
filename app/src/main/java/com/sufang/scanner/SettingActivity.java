@@ -58,6 +58,7 @@ public class SettingActivity extends AppCompatActivity {
         binding.settingWebservice.setText(preferencesUtils.getString(Constant.WEBSERVICE_URL));
         binding.settingPsw.setText(preferencesUtils.getString(Constant.KEY_SETTINH_PSW));
         binding.checkSettingPsw.setText(preferencesUtils.getString(Constant.KEY_SETTINH_PSW));
+        binding.factoryId.setText(preferencesUtils.getString(Constant.KEY_FACTORY,"WE1"));
         binding.settingMenu1.setChecked(preferencesUtils.getBoolean(Constant.MENU_1));
         binding.settingMenu2.setChecked(preferencesUtils.getBoolean(Constant.MENU_2));
         binding.settingMenu3.setChecked(preferencesUtils.getBoolean(Constant.MENU_3));
@@ -76,7 +77,7 @@ public class SettingActivity extends AppCompatActivity {
         binding.settingBtnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String ip1, ip2, ip3, ip4, port, siteId, username, password, dryHour, webservice_url, cleanHour, settingPsw, checkSettingPsw, PrintSetting;
+                String ip1, ip2, ip3, ip4, port, siteId,factoryId, username, password, dryHour, webservice_url, cleanHour, settingPsw, checkSettingPsw, PrintSetting;
                 ip1 = binding.etServerAddress1.getText().toString();
                 ip2 = binding.etServerAddress2.getText().toString();
                 ip3 = binding.etServerAddress3.getText().toString();
@@ -86,6 +87,11 @@ public class SettingActivity extends AppCompatActivity {
                 webservice_url = binding.settingWebservice.getText().toString();
                 settingPsw = binding.settingPsw.getText().toString();
                 checkSettingPsw = binding.checkSettingPsw.getText().toString();
+                factoryId = binding.factoryId.getText().toString();
+                if (factoryId.isEmpty()) {
+                    showMsg(getString(R.string.txt_input_factory));
+                    return;
+                }
                 if (!checkSettingPsw.equals(settingPsw)) {
                     showMsg(getString(R.string.txt_input_check_setting_psw));
                     return;
@@ -112,6 +118,7 @@ public class SettingActivity extends AppCompatActivity {
                 preferencesUtils.commitString(Constant.KEY_SITE_ID, siteId);
                 preferencesUtils.commitString(Constant.WEBSERVICE_URL, webservice_url);
                 preferencesUtils.commitString(Constant.KEY_SETTINH_PSW, settingPsw);
+                preferencesUtils.commitString(Constant.KEY_FACTORY, factoryId);
                 preferencesUtils.commitBoolean(Constant.MENU_1, binding.settingMenu1.isChecked());
                 preferencesUtils.commitBoolean(Constant.MENU_2, binding.settingMenu2.isChecked());
                 preferencesUtils.commitBoolean(Constant.MENU_3, binding.settingMenu3.isChecked());
@@ -170,7 +177,7 @@ public class SettingActivity extends AppCompatActivity {
                         public void run() {
                             Menu.Client.initMsgHandler();
                             try {
-                                Thread.sleep(1000);
+                                Thread.sleep(3000);
                             }catch (Exception ex){}
                             if (!Menu.Client.isConnected()) {
                                 on_show_mes("MES:" + getString(R.string.txt_connect_fail));

@@ -7,6 +7,9 @@ public class Constant {
     public static String KEY_IP_3 = "KEY_IP_3";
     public static String KEY_IP_4 = "KEY_IP_4";
     public static String KEY_PORT = "KEY_PORT";
+    public static String KEY_LANUAGE = "KEY_LANUAGE";
+    public static String KEY_SAVEPSW = "KEY_SAVEPSW";
+    public static String KEY_FACTORY = "KEY_FACTORY";
     public static String KEY_SERVER_ADDRESS = "KEY_SERVER_ADDRESS";
     public static String KEY_SITE_ID = "KEY_SITE_ID";
     public static String KEY_DRY_HOUR = "KEY_DRY_HOUR";

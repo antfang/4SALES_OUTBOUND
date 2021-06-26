@@ -33,6 +33,7 @@ import android.zyapi.pos.utils.BitmapTools;
 
 import com.bin.david.form.core.TableConfig;
 import com.bin.david.form.data.column.Column;
+import com.bin.david.form.data.format.sequence.BaseSequenceFormat;
 import com.bin.david.form.data.table.TableData;
 import com.hjq.toast.ToastUtils;
 import com.sufang.dailog.EditDialog;
@@ -70,7 +71,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
     /**
      * 判定是否为第一次打印(indicate the first time print after paper loading)
      */
-    public static boolean IS_FIRST_PRINT = true;
+    public static boolean IS_FIRST_PRINT = false;
     private Bitmap mBitmap = null;
     private PrinterDevice mPrinter = null;
 
@@ -102,6 +103,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
     private final int CHECK_LOT = 21;
     private final int CLEAR_CONTROL = 26;
     private final int CLEAR_CONTROL2 = 27;
+    private final int PRINTPALLENT = 28;
     private boolean isOpen = true;
     private static final float BEEP_VOLUME = 1.0f;
     public static String str_codetypename = "";
@@ -124,7 +126,6 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
             super.handleMessage(msg);
             try {
                 if (!isSettingOk()) {
-                    onMiddlewareFail(getString(R.string.txt_alert_message));
                     return;
                 }
                 if (Menu.Client == null) {
@@ -204,12 +205,13 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
                         }
                         int _color1 = (int) msg.obj;
                         binding.deliveryNo9300.setBackgroundColor(_color1);
-                        binding.deliveryNo9300.setTextColor(Color.BLACK); if (_color1 == Color.GREEN) {
-                        Delivery_No = binding.deliveryNo9300.getText().toString();
-                    } else {
-                        Delivery_No = "";
-                        Lot_List = null;
-                    }
+                        binding.deliveryNo9300.setTextColor(Color.BLACK);
+                        if (_color1 == Color.GREEN) {
+                            Delivery_No = binding.deliveryNo9300.getText().toString();
+                        } else {
+                            Delivery_No = "";
+                            Lot_List = null;
+                        }
                         break;
                     case CUST_PART_NO_COLOR:
                         if (msg == null) {
@@ -288,7 +290,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
                         }
                         break;
                     case SHOWALERT:
-                        final String showalert_msg =  msg.obj.toString();
+                        final String showalert_msg = msg.obj.toString();
                         SweetAlertDialog dialog = new SweetAlertDialog(Activity_9300.this, SweetAlertDialog.NORMAL_TYPE)
                                 .setTitleText(getString(R.string.txt_alert_title))
                                 .setContentText(showalert_msg)
@@ -303,7 +305,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
                         dialog.show();
                         break;
                     case SHOWALERT_1:
-                        String showalert_msg2 =    msg.obj.toString();
+                        String showalert_msg2 = msg.obj.toString();
                         SweetAlertDialog dialog1 = new SweetAlertDialog(Activity_9300.this, SweetAlertDialog.NORMAL_TYPE)
                                 .setTitleText(getString(R.string.txt_alert_title))
                                 .setContentText(showalert_msg2)
@@ -327,6 +329,11 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
 
                         dialog1.setCancelable(true);
                         dialog1.show();
+                        break;
+                    case PRINTPALLENT:
+                        if (((String) (msg.obj)).isEmpty()) {
+                            printScanResult((String) (msg.obj), "准备就绪", true);
+                        }
                         break;
                     case SET_PALLET:
                         binding.palletNo9300.setText(msg.obj.toString());
@@ -356,12 +363,12 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
                         Lot_No = "";
                         binding.cartonNo9300.setText("");
                         if (binding.deliveryNo9300.getText().toString().isEmpty()) {
-                            onMiddlewareFail("Enter Delivery NO.");
+                            onMiddlewareFail("请输入 Delivery NO.");
                             Focuse_Control(DELIVERY_NO);
                             return;
                         }
                         if (binding.lotId9300.getText().toString().isEmpty()) {
-                            onMiddlewareFail("Enter Lot ID.");
+                            onMiddlewareFail("请输入 Lot ID.");
                             Focuse_Control(SMALL_LOT);
                             return;
                         }
@@ -369,7 +376,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
                         Small_Lot = binding.lotId9300.getText().toString();
                         boolean flag = false;
                         if (Lot_List == null || Lot_List.size() <= 0 || Lot_List.get(0).getLot_id().isEmpty()) {
-                            onMiddlewareFail("This Delivery No have not lot List.");
+                            onMiddlewareFail("订单中不存在Lot list.");
                             onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.RED, null);
                             return;
                         } else {
@@ -407,7 +414,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
                     case GET_DNLOTID_1:
                         //onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.WHITE, null);
                         if (binding.deliveryNo9300.getText().toString().isEmpty()) {
-                            onMiddlewareFail("Enter Delivery NO.");
+                            onMiddlewareFail("请输入 Delivery NO.");
                             Focuse_Control(DELIVERY_NO);
                             return;
                         }
@@ -418,6 +425,10 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
                             public void run() {
                                 try {
                                     Lot_List = Menu.Client.GetDNLotId_1(Delivery_No);
+                                    if(Lot_List==null ||Lot_List.size()<=0)
+                                    {
+                                        throw new Exception("ERP中Lot List 不存在。");
+                                    }
                                     onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.GREEN, null);
                                     Focuse_Control(SMALL_LOT);
                                     Clear_Control();
@@ -450,6 +461,8 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
                                             initTable_1(res);
                                             onMiddlewareChangeColor(PALLET_COLOR, null, Color.GREEN, null);
                                             //Focuse_Control(DELIVERY_NO);
+                                        }else {
+                                            initTable_1(null);
                                         }
                                     } catch (Exception ex) {
                                         onMiddlewareChangeColor(PALLET_COLOR, null, Color.RED, null);
@@ -526,9 +539,9 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
                         break;
 
                     case END_PALLET_4:
-                        if(msg.obj!=null){
+                        if (msg.obj != null) {
                             Config_Flag = msg.obj.toString();
-                        }else{
+                        } else {
                             Config_Flag = "";
                         }
                         if (Menu.Client.isConnected()) {
@@ -536,7 +549,11 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
                                 @Override
                                 public void run() {
                                     try {
+                                        String pallent = Pallet_No;
                                         Boolean res = Menu.Client.End_Pallet_4(Pallet_No, Confirm_Key, Config_Flag);
+                                        if (Config_Flag.equals("Y")) {
+                                            PrintPallent(pallent);
+                                        }
                                         Search_9300_2(null);
                                         onMiddlewareChangeColor(2, null, Color.GREEN, null);
                                     } catch (Exception ex) {
@@ -582,7 +599,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
                 byte[] b_strscan = intent.getByteArrayExtra("scanvalue");
                 String s = new String(b_strscan);
                 if (binding.palletNo9300.hasFocus()) {//扫描的是ScanId
-//                    binding.palletNo9300.setText(s);
+                    binding.palletNo9300.setText(s);
 //                    Search_9300_2(null);
                 } else if (binding.deliveryNo9300.hasFocus()) {
                     binding.deliveryNo9300.setText(s);
@@ -617,6 +634,12 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
     private void Search_9300_2(List<PrintHistory> list) {
         Message msg = handler.obtainMessage(SEARCH_9300_2);
         msg.obj = list;
+        msg.sendToTarget();
+    }
+
+    private void PrintPallent(String pallet_No) {
+        Message msg = handler.obtainMessage(PRINTPALLENT);
+        msg.obj = pallet_No;
         msg.sendToTarget();
     }
 
@@ -708,7 +731,8 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
                             sweetAlertDialog.dismiss();
-                            toSetting();
+                            finish();
+                            //toSetting();
                         }
                     });
             dialog.setCancelable(false);
@@ -768,7 +792,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
             show_alert(msg);
         }
         if (alarm == null) {
-        } else if (alarm) {
+        } else if (alarm ) {
             playAlarm();
         } else {
             playSound();
@@ -819,6 +843,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
         mPrinter.setPrintEventListener(mPrinterListener);
         //必须初始化
         mPrinter.init();
+        setIsFirstPrint(false);
     }
 
     private void setIsFirstPrint(boolean flag) {
@@ -946,6 +971,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
                 mediaPlayerAlarm.setVolume(BEEP_VOLUME, BEEP_VOLUME);
                 mediaPlayerAlarm.prepare();
             } catch (IOException e) {
+                e.printStackTrace();
                 mediaPlayerAlarm = null;
             }
         }
@@ -995,7 +1021,30 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
         binding.includeTitle.leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                final String showalert_msg = "是否退出9300。";
+                SweetAlertDialog dialog = new SweetAlertDialog(Activity_9300.this, SweetAlertDialog.NORMAL_TYPE)
+                        .setTitleText(getString(R.string.txt_alert_title))
+                        .setContentText(showalert_msg)
+                        .setConfirmText(getString(R.string.txt_ok))
+                        .setCancelText("取消")
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismiss();
+                            }
+                        })
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                try {
+                                    sweetAlertDialog.dismiss();
+                                    finish();
+                                }catch(Exception ex) {
+
+                                }
+                            }
+                        });
+                dialog.show();
             }
         });
         binding.includeTitle.titleRefreshButton.setOnClickListener(new View.OnClickListener() {
@@ -1010,7 +1059,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
             public void onClick(View v) {
                 binding.deliveryNo9300.setText("");
                 Focuse_Control(DELIVERY_NO);
-                onMiddlewareChangeColor(DELIVERY_NO_COLOR,null,Color.WHITE,null);
+                onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.WHITE, null);
             }
         });
         binding.clear29300.setOnClickListener(new View.OnClickListener() {
@@ -1018,7 +1067,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
             public void onClick(View v) {
                 binding.lotId9300.setText("");
                 Focuse_Control(SMALL_LOT);
-                onMiddlewareChangeColor(SMALL_LOT_COLOR,null,Color.WHITE,null);
+                onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.WHITE, null);
             }
         });
         binding.clear39300.setOnClickListener(new View.OnClickListener() {
@@ -1026,7 +1075,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
             public void onClick(View v) {
                 binding.lotId29300.setText("");
                 Focuse_Control(BIG_LOT);
-                onMiddlewareChangeColor(BIG_LOT_COLOR,null,Color.WHITE,null);
+                onMiddlewareChangeColor(BIG_LOT_COLOR, null, Color.WHITE, null);
             }
         });
         binding.clear49300.setOnClickListener(new View.OnClickListener() {
@@ -1034,7 +1083,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
             public void onClick(View v) {
                 binding.custPartNo9300.setText("");
                 Focuse_Control(CUST_PART_NO);
-                onMiddlewareChangeColor(CUST_PART_NO_COLOR,null,Color.WHITE,null);
+                onMiddlewareChangeColor(CUST_PART_NO_COLOR, null, Color.WHITE, null);
 
             }
         });
@@ -1065,7 +1114,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
         binding.deliveryNo9300.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.WHITE, null);
+                onMiddlewareChangeColor(DELIVERY_NO_COLOR, null, Color.WHITE, null);
             }
 
             @Override
@@ -1081,7 +1130,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
         binding.lotId9300.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.WHITE, null);
+                onMiddlewareChangeColor(SMALL_LOT_COLOR, null, Color.WHITE, null);
             }
 
             @Override
@@ -1097,7 +1146,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
         binding.lotId29300.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    onMiddlewareChangeColor(BIG_LOT_COLOR, null, Color.WHITE, null);
+                onMiddlewareChangeColor(BIG_LOT_COLOR, null, Color.WHITE, null);
             }
 
             @Override
@@ -1113,7 +1162,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
         binding.custPartNo9300.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    onMiddlewareChangeColor(CUST_PART_NO_COLOR, null, Color.WHITE, null);
+                onMiddlewareChangeColor(CUST_PART_NO_COLOR, null, Color.WHITE, null);
             }
 
             @Override
@@ -1129,24 +1178,27 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
         IntentFilter filter = new IntentFilter();
         filter.addAction(ISMART_KEY_SCAN_VALUE);
         registerReceiver(mReceiver, filter);
-        if(Menu.USER_NAME.toUpperCase().equals("ADMIN"))
-        {
-            binding.buttonPrint9300layout.setVisibility(View.GONE);
-        }
+//        if(Menu.USER_NAME.toUpperCase().equals("ADMIN"))
+//        {
+        binding.buttonPrint9300.setVisibility(View.VISIBLE);
+//        }
         binding.buttonPrint9300.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!binding.palletNo9300.getText().toString().isEmpty())
-                {
-                    printScanResult(binding.palletNo9300.getText().toString(),true);
-                }if(!binding.custPartNo9300.getText().toString().isEmpty())
-                {
-                    printScanResult(binding.custPartNo9300.getText().toString(),true);
+                if (!binding.palletNo9300.getText().toString().isEmpty()) {
+                    printScanResult(binding.palletNo9300.getText().toString(), "准备就绪", true);
+                } else {
+                    showMsg("PalletNO 不能为空。");
                 }
+//                if(!binding.custPartNo9300.getText().toString().isEmpty())
+//                {
+//                    printScanResult(binding.custPartNo9300.getText().toString(),true);
+//                }
             }
         });
     }
-    public Bitmap printScanResult(String result, boolean isprint) {
+
+    public Bitmap printScanResult(String result, String line2, boolean isprint) {
         int ScanCodeType = 1;
         if (str_codetypename == null) {
             str_codetypename = "一维码";
@@ -1168,7 +1220,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
         //打印浓度
         int print_setting = 25;
         try {
-            print_setting =  preferencesUtils.getStringToInt(Constant.KEY_PRINT_SETTING,25) ;
+            print_setting = preferencesUtils.getStringToInt(Constant.KEY_PRINT_SETTING, 25);
         } catch (Exception ex) {
         }
         int concentration = print_setting;
@@ -1187,13 +1239,13 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
                 mPrinter.addText(concentration, tData_head);
             }
         }
-        //构造TextData实例
-//        PrinterDevice.TextData tData_body = mPrinter.new TextData();
-//        //添加打印内容
-//        tData_body.addText(result + "\n");
-//        tData_body.addParam(PrinterDevice.PARAM_ALIGN_MIDDLE);
-//        //设置两倍字体大小
-//        tData_body.addParam(PrinterDevice.PARAM_TEXTSIZE_1X);
+//        构造TextData实例
+        PrinterDevice.TextData tData_body = mPrinter.new TextData();
+        //添加打印内容
+        tData_body.addText(line2 + "\n");
+        tData_body.addParam(PrinterDevice.PARAM_ALIGN_MIDDLE);
+        //设置两倍字体大小
+        tData_body.addParam(PrinterDevice.PARAM_TEXTSIZE_24);
         //添加到打印队列
         //  mPrinter.addText(concentration, tData_body);
         int number_count = StringUtil.isNumeric(result);
@@ -1204,7 +1256,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
         if (ScanCodeType == 1) {
             if (str_count > 16 && str_count <= 26) {
                 mWidth = 390;//
-                left = 20 ;
+                left = 20;
             } else if (str_count > 26) {
                 mWidth = 390;
                 concentration = 1;
@@ -1221,14 +1273,14 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
         if (ScanCodeType == 2) {
             mWidth = 150;
             mHeight = 150;
-            left =  50;
+            left = 50;
             flag = false;
         }
-        mBitmap = BarcodeCreater.creatBarcode(this, result, mWidth, mHeight,flag , ScanCodeType, _s_45);
+        mBitmap = BarcodeCreater.creatBarcode(this, result, mWidth, mHeight, flag, ScanCodeType, _s_45);
         if (isprint) {
             byte[] printData = BitmapTools.bitmap2PrinterBytes(mBitmap);
             mPrinter.addBmp(concentration, left, mBitmap.getWidth(), mBitmap.getHeight(), printData);
-
+            mPrinter.addText(concentration, tData_body);
             if (str_papername.equals("标签纸")) {
                 //添加黑标检测 走纸到黑标处再开始打印下一张数据
                 mPrinter.addAction(PrinterDevice.PRINTER_CMD_KEY_CHECKBLACK);
@@ -1258,7 +1310,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
     private void initTable_1(List<PrintHistory> history_list) {
         pallet_no_Column = pallet_no_Column != null ? pallet_no_Column : new Column<>(getString(R.string.txt_column_pallet_no), "pallet_no");
         delivery_no_Column = delivery_no_Column != null ? delivery_no_Column : new Column<>(getString(R.string.txt_column_delivery_no), "delivery_no");
-        lot_id_Column = lot_id_Column != null ? lot_id_Column : new Column<>(getString(R.string.txt_carrier), "lot_id");
+        lot_id_Column = lot_id_Column != null ? lot_id_Column : new Column<>(getString(R.string.txt_lot_id), "lot_id");
         setPallet_key_Column = setPallet_key_Column != null ? setPallet_key_Column : new Column<>("key", "pallet_key");
         table_list = history_list;
         if (history_list == null) {
@@ -1277,6 +1329,12 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
         TableConfig config = binding.table19300.getConfig();
         config.setShowTableTitle(false);
         config.setShowXSequence(false);
+        tableData.setYSequenceFormat(new BaseSequenceFormat(){
+            @Override
+            public String format(Integer integer) {
+                return String.valueOf(integer-1);
+            }
+        });
     }
 
     private void toSetting() {
@@ -1330,7 +1388,11 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
         return super.onKeyUp(keyCode, event);
 
     }
-
+    // 捕获返回键的方法2
+    @Override
+    public void onBackPressed() {
+        binding.includeTitle.leftButton.performClick();
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -1370,6 +1432,7 @@ public class Activity_9300 extends AppCompatActivity implements MiddlewareListen
             //手持机Fn的键值(PDA keycode)[其它键值为：SCAN:280 BACK:13 LEFT:131 RIGHT:132]
             if (keyCode == 133) {
                 mPrinter.checkBlackAsync();
+
             }
         }
         return super.onKeyDown(keyCode, event);

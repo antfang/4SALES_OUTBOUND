@@ -1,6 +1,8 @@
 package com.miracom.Client;
 
 import android.graphics.Color;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.util.Consumer;
 import android.telecom.Call;
 
@@ -20,8 +22,11 @@ import com.sufang.util.DateUtils;
 import com.sufang.util.PreferencesUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * mes连接客户端
@@ -53,6 +58,7 @@ public class Client {
     }
 
     public boolean isConnected() {
+//        return true;
         return isConnected;
     }
 
@@ -149,10 +155,10 @@ public class Client {
 
         try {
             in_node.addString("PASSPORT", "");
-            in_node.addString("LANGUAGE", "1");
+            in_node.addChar("LANGUAGE", preferencesUtils.getString(Constant.KEY_LANUAGE,"1").charAt(0));
             in_node.addString("USERID", name);
             in_node.addString("PASSWORD", pws);
-            in_node.addString("FACTORY", "WE1");
+            in_node.addString("FACTORY", preferencesUtils.getString(Constant.KEY_FACTORY,"WE1"));
             in_node.addChar("PROCSTEP", '1');
 
             try {
@@ -215,15 +221,19 @@ public class Client {
     }
 
     public boolean Lot_ID_Validation_9100_1(String lot_id) throws Exception {
+//        if(1==1) {
+//            if( ((int)(Math.random()*6))%2==0) return true;
+//            else throw new Exception("不匹配");
+//        }
         TRSNode in_node;
         TRSNode out_node;
         ArrayList<PrintHistory> res = null;
         in_node = new TRSNode("ViewLotIn");
         out_node = new TRSNode("ViewLotOut");
         try {
-            in_node.addString("FACTORY", "WE1");
+            in_node.addString("FACTORY", preferencesUtils.getString(Constant.KEY_FACTORY,"WE1"));
             in_node.addString("PASSPORT", "");
-            in_node.addChar("LANGUAGE", '1');
+            in_node.addChar("LANGUAGE", preferencesUtils.getString(Constant.KEY_LANUAGE,"1").charAt(0));
             in_node.addString("USERID", Menu.USER_NAME.toUpperCase());
             in_node.addString("PASSWORD", "");
             in_node.addChar("PROCSTEP", '1');
@@ -247,9 +257,9 @@ public class Client {
         in_node = new TRSNode("ViewLotIn");
         out_node = new TRSNode("ViewLotOut");
         try {
-            in_node.addString("FACTORY", "WE1");
+            in_node.addString("FACTORY", preferencesUtils.getString(Constant.KEY_FACTORY,"WE1"));
             in_node.addString("PASSPORT", "");
-            in_node.addChar("LANGUAGE", '1');
+            in_node.addChar("LANGUAGE", preferencesUtils.getString(Constant.KEY_LANUAGE,"1").charAt(0));
             in_node.addString("USERID", Menu.USER_NAME.toUpperCase());
             in_node.addString("PASSWORD", "");
             in_node.addChar("PROCSTEP", '2');
@@ -293,9 +303,9 @@ public class Client {
         in_node = new TRSNode("ViewLotIn");
         out_node = new TRSNode("ViewLotOut");
         try {
-            in_node.addString("FACTORY", "WE1");
+            in_node.addString("FACTORY", preferencesUtils.getString(Constant.KEY_FACTORY,"WE1"));
             in_node.addString("PASSPORT", "");
-            in_node.addChar("LANGUAGE", '1');
+            in_node.addChar("LANGUAGE", preferencesUtils.getString(Constant.KEY_LANUAGE,"1").charAt(0));
             in_node.addString("USERID", Menu.USER_NAME.toUpperCase());
             in_node.addString("PASSWORD", "");
             in_node.addChar("PROCSTEP", '3');
@@ -326,9 +336,9 @@ public class Client {
         in_node = new TRSNode("ViewLotIn");
         out_node = new TRSNode("ViewLotOut");
         try {
-            in_node.addString("FACTORY", "WE1");
+            in_node.addString("FACTORY", preferencesUtils.getString(Constant.KEY_FACTORY,"WE1"));
             in_node.addString("PASSPORT", "");
-            in_node.addChar("LANGUAGE", '1');
+            in_node.addChar("LANGUAGE", preferencesUtils.getString(Constant.KEY_LANUAGE,"1").charAt(0));
             in_node.addString("USERID", Menu.USER_NAME.toUpperCase());
             in_node.addString("PASSWORD", "");
             in_node.addChar("PROCSTEP", '4');
@@ -360,9 +370,9 @@ public class Client {
         in_node = new TRSNode("ViewLotIn");
         out_node = new TRSNode("ViewLotOut");
         try {
-            in_node.addString("FACTORY", "WE1");
+            in_node.addString("FACTORY", preferencesUtils.getString(Constant.KEY_FACTORY,"WE1"));
             in_node.addString("PASSPORT", "");
-            in_node.addChar("LANGUAGE", '1');
+            in_node.addChar("LANGUAGE", preferencesUtils.getString(Constant.KEY_LANUAGE,"1").charAt(0));
             in_node.addString("USERID", Menu.USER_NAME.toUpperCase());
             in_node.addString("PASSWORD", "");
             in_node.addChar("PROCSTEP", '5');
@@ -429,9 +439,9 @@ public class Client {
         in_node = new TRSNode("ViewLotIn");
         out_node = new TRSNode("ViewLotOut");
         try {
-            in_node.addString("FACTORY", "WE1");
+            in_node.addString("FACTORY", preferencesUtils.getString(Constant.KEY_FACTORY,"WE1"));
             in_node.addString("PASSPORT", "");
-            in_node.addChar("LANGUAGE", '1');
+            in_node.addChar("LANGUAGE", preferencesUtils.getString(Constant.KEY_LANUAGE,"1").charAt(0));
             in_node.addString("USERID", Menu.USER_NAME.toUpperCase());
             in_node.addString("PASSWORD", "");
             in_node.addChar("PROCSTEP", '6');
@@ -459,9 +469,9 @@ public class Client {
         in_node = new TRSNode("ViewLotIn");
         out_node = new TRSNode("ViewLotOut");
         try {
-            in_node.addString("FACTORY", "WE1");
+            in_node.addString("FACTORY", preferencesUtils.getString(Constant.KEY_FACTORY,"WE1"));
             in_node.addString("PASSPORT", "");
-            in_node.addChar("LANGUAGE", '1');
+            in_node.addChar("LANGUAGE", preferencesUtils.getString(Constant.KEY_LANUAGE,"1").charAt(0));
             in_node.addString("USERID", Menu.USER_NAME.toUpperCase());
             in_node.addString("PASSWORD", "");
             in_node.addChar("PROCSTEP", '7');
@@ -490,9 +500,9 @@ public class Client {
         in_node = new TRSNode("ViewLotIn");
         out_node = new TRSNode("ViewLotOut");
         try {
-            in_node.addString("FACTORY", "WE1");
+            in_node.addString("FACTORY", preferencesUtils.getString(Constant.KEY_FACTORY,"WE1"));
             in_node.addString("PASSPORT", "");
-            in_node.addChar("LANGUAGE", '1');
+            in_node.addChar("LANGUAGE", preferencesUtils.getString(Constant.KEY_LANUAGE,"1").charAt(0));
             in_node.addString("USERID", Menu.USER_NAME.toUpperCase());
             in_node.addString("PASSWORD", "");
             in_node.addChar("PROCSTEP", '8');
@@ -515,9 +525,9 @@ public class Client {
         in_node = new TRSNode("ViewLotIn");
         out_node = new TRSNode("ViewLotOut");
         try {
-            in_node.addString("FACTORY", "WE1");
+            in_node.addString("FACTORY", preferencesUtils.getString(Constant.KEY_FACTORY,"WE1"));
             in_node.addString("PASSPORT", "");
-            in_node.addChar("LANGUAGE", '1');
+            in_node.addChar("LANGUAGE", preferencesUtils.getString(Constant.KEY_LANUAGE,"1").charAt(0));
             in_node.addString("USERID", Menu.USER_NAME.toUpperCase());
             in_node.addString("PASSWORD", "");
             in_node.addChar("PROCSTEP", '9');
@@ -533,7 +543,31 @@ public class Client {
         }
     }
 
-    public List<PrintHistory> Query_Lot_List_Status_A(List<PrintHistory> list) throws Exception{
+    public List<List<PrintHistory>> Query_Lot_List_Status_A(List<PrintHistory> list, List<PrintHistory> listout) throws Exception{
+//        PrintHistory p1 = new PrintHistory();
+//        p1.setCode("AA");
+//        p1.setName("AA");
+//        PrintHistory p2 = new PrintHistory();
+//        p2.setCode("BB");
+//        p2.setName("BB");
+//        PrintHistory p3 = new PrintHistory();
+//        p3.setCode("CC");
+//        p3.setName("CC");
+//        List<PrintHistory> lists = new ArrayList<PrintHistory>() ;
+//        lists.add(p1);
+//        lists.add(p2);
+//        lists.add(p3);
+//        listout = new ArrayList<>();
+//        for(int i= 0;i<30;i++) {
+//            PrintHistory his1 = new PrintHistory();
+//            his1.setLot_id("12"+i);
+//            his1.setCreateTime(new Date());
+//            listout.add(his1);
+//        }
+//         List<List<PrintHistory>> reslist = new ArrayList<>();
+//         reslist.add(lists);
+//         reslist.add(listout);
+//        if(1==1) return reslist ;
         TRSNode in_node;
         TRSNode out_node;
         TRSNode pallet_list;
@@ -541,9 +575,9 @@ public class Client {
         in_node = new TRSNode("ViewLotIn");
         out_node = new TRSNode("ViewLotOut");
         try {
-            in_node.addString("FACTORY", "WE1");
+            in_node.addString("FACTORY", preferencesUtils.getString(Constant.KEY_FACTORY,"WE1"));
             in_node.addString("PASSPORT", "");
-            in_node.addChar("LANGUAGE", '1');
+            in_node.addChar("LANGUAGE", preferencesUtils.getString(Constant.KEY_LANUAGE,"1").charAt(0));
             in_node.addString("USERID", Menu.USER_NAME.toUpperCase());
             in_node.addString("PASSWORD", "");
             in_node.addChar("PROCSTEP", 'A');
@@ -555,15 +589,27 @@ public class Client {
             String msg = SetMessage(in_node, out_node, null);
             if (msg.trim().contains(Constant.SUCCESS)) {
                 List<TRSNode> lot_list = out_node.getList("LOT_LIST");
-                res = new ArrayList<>();
+                listout = new ArrayList<>();
                 for (TRSNode s : lot_list) {
+                    PrintHistory los = new PrintHistory();
+                    los.setLot_id(s.getString("LOT_ID"));
+                    los.setName(s.getString("RESULT"));
+                    los.setCreateTime(new Date());
+                    listout.add(los);
+                }
+                List<TRSNode> spec_list = out_node.getList("SPEC_LIST");
+                res = new ArrayList<>();
+                for (TRSNode s : spec_list) {
                     PrintHistory his = new PrintHistory();
-                    his.setLot_id(s.getString("LOT_ID"));
-                    his.setName(s.getString("RESULT"));
+                    his.setCode(s.getString("CHAR_ID"));
+                    his.setName(s.getString("VALUE"));
                     his.setCreateTime(new Date());
                     res.add(his);
                 }
-                return res;
+                List<List<PrintHistory>> reslist1 = new ArrayList<>();
+                reslist1.add(res);
+                reslist1.add(listout);
+                return reslist1;
             } else {
                 throw new Exception(msg);
             }
@@ -715,6 +761,17 @@ public class Client {
         }
     }
     public List<PrintHistory> GET_LOT_LIST_ID_9(String do_no) throws Exception {
+//        PrintHistory p1 = new PrintHistory();
+//        p1.setLot_id("AA");
+//        PrintHistory p2 = new PrintHistory();
+//        p2.setLot_id("BB");
+//        PrintHistory p3 = new PrintHistory();
+//        p3.setLot_id("CC");
+//        List<PrintHistory> list = new ArrayList<PrintHistory>() ;
+//        list.add(p1);
+//        list.add(p2);
+//        list.add(p3);
+//        if(1==1) return list;
         List<PrintHistory> res = null;
         try {
             String soapXML =

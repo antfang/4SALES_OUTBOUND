@@ -30,6 +30,7 @@ import com.bin.david.form.core.TableConfig;
 import com.bin.david.form.data.CellInfo;
 import com.bin.david.form.data.column.Column;
 import com.bin.david.form.data.format.bg.BaseCellBackgroundFormat;
+import com.bin.david.form.data.format.sequence.BaseSequenceFormat;
 import com.bin.david.form.data.table.TableData;
 import com.hjq.toast.ToastUtils;
 import com.sufang.dailog.EditDialog;
@@ -98,7 +99,6 @@ public class Activity_9500 extends AppCompatActivity implements MiddlewareListen
             super.handleMessage(msg);
             try {
                 if (!isSettingOk()) {
-                    onMiddlewareFail(getString(R.string.txt_alert_message));
                     return;
                 }
                 if (Menu.Client == null) {
@@ -489,7 +489,7 @@ public class Activity_9500 extends AppCompatActivity implements MiddlewareListen
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
                             sweetAlertDialog.dismiss();
-                            toSetting();
+                            finish();
                         }
                     });
             dialog.setCancelable(false);
@@ -538,7 +538,7 @@ public class Activity_9500 extends AppCompatActivity implements MiddlewareListen
             show_alert(msg);
         }
         if (alarm == null) {
-        } else if (alarm) {
+        } else if (alarm ) {
             playAlarm();
         } else {
             playSound();
@@ -778,7 +778,30 @@ public class Activity_9500 extends AppCompatActivity implements MiddlewareListen
         binding.includeTitle.leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                final String showalert_msg = "是否退出9500。";
+                SweetAlertDialog dialog = new SweetAlertDialog(Activity_9500.this, SweetAlertDialog.NORMAL_TYPE)
+                        .setTitleText(getString(R.string.txt_alert_title))
+                        .setContentText(showalert_msg)
+                        .setConfirmText(getString(R.string.txt_ok))
+                        .setCancelText("取消")
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismiss();
+                            }
+                        })
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                try {
+                                    sweetAlertDialog.dismiss();
+                                    finish();
+                                }catch(Exception ex) {
+
+                                }
+                            }
+                        });
+                dialog.show();
             }
         });
 //        binding.buttonOK9500.setOnClickListener(new View.OnClickListener() {
@@ -831,6 +854,12 @@ public class Activity_9500 extends AppCompatActivity implements MiddlewareListen
         TableConfig config = binding.table19500.getConfig();
         config.setShowTableTitle(false);
         config.setShowXSequence(false);
+        tableData.setYSequenceFormat(new BaseSequenceFormat(){
+            @Override
+            public String format(Integer integer) {
+                return String.valueOf(integer-1);
+            }
+        });
     }
 
     private void initTable_2(List<PrintHistory> history_list1) {
@@ -847,6 +876,12 @@ public class Activity_9500 extends AppCompatActivity implements MiddlewareListen
         TableConfig config = binding.table29500.getConfig();
         config.setShowTableTitle(false);
         config.setShowXSequence(false);
+        tableData.setYSequenceFormat(new BaseSequenceFormat(){
+            @Override
+            public String format(Integer integer) {
+                return String.valueOf(integer-1);
+            }
+        });
 //        config.setContentCellBackgroundFormat(new BaseCellBackgroundFormat<CellInfo>() {
 //            @Override
 //            public int getBackGroundColor(CellInfo cellInfo) {
@@ -938,7 +973,11 @@ public class Activity_9500 extends AppCompatActivity implements MiddlewareListen
                 break;
         }
     }
-
+    // 捕获返回键的方法2
+    @Override
+    public void onBackPressed() {
+        binding.includeTitle.leftButton.performClick();
+    }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 

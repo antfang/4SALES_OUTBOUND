@@ -48,7 +48,14 @@ public class PreferencesUtils {
             return "";
         }
     }
-
+    public String getString(String key,String defValue) {
+        try {
+            return preferenceUtil.getPreferences.getString(key, defValue);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
     public int getInt(String key) {
         try {
             return preferenceUtil.getPreferences.getInt(key, 0);

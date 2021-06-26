@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -34,7 +35,9 @@ import com.bin.david.form.data.CellInfo;
 import com.bin.david.form.data.column.Column;
 import com.bin.david.form.data.format.bg.BaseCellBackgroundFormat;
 import com.bin.david.form.data.format.draw.ImageResDrawFormat;
+import com.bin.david.form.data.format.sequence.BaseSequenceFormat;
 import com.bin.david.form.data.table.TableData;
+import com.bin.david.form.listener.OnColumnItemClickListener;
 import com.hjq.toast.ToastUtils;
 import com.sufang.dailog.EditDialog;
 import com.sufang.model.DropModel;
@@ -51,10 +54,12 @@ import com.sufang.util.StringUtil;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -65,6 +70,7 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
     private MediaPlayer mediaPlayerAlarm = null;
     private PreferencesUtils preferencesUtils = PreferencesUtils.getInstance();
     private List<DropModel> type_list = new ArrayList<DropModel>();
+    private boolean isStop = false;
     /**
      * 判定是否为第一次打印(indicate the first time print after paper loading)
      */
@@ -98,7 +104,6 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
             super.handleMessage(msg);
             try {
                 if (!isSettingOk()) {
-                    onMiddlewareFail(getString(R.string.txt_alert_message));
                     return;
                 }
                 if (Menu.Client == null) {
@@ -189,16 +194,19 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
                                     try {
                                         List<PrintHistory> res = Menu.Client.GET_LOT_LIST_ID_9(OrderString);
                                         if (res != null && res.size() > 0) {
-                                            res = Menu.Client.Query_Lot_List_Status_A(res);
-                                            initTable_1(res);
+                                            List<List<PrintHistory>> lists = Menu.Client.Query_Lot_List_Status_A(res, res);
+                                            initTable_1(lists.get(1));
+                                            initTable_2(lists.get(0));
+                                            Focuse_Control(binding.lotId9100);
                                             onMiddlewareChangeColor(1, null, Color.GREEN, null);
-                                        }else {
-                                            throw new Exception("查询无数据");
+                                        } else {
+                                            throw new Exception("ERP查询无Lot List数据");
                                         }
                                     } catch (Exception ex) {
                                         onMiddlewareChangeColor(1, null, Color.RED, null);
                                         Focuse_Control(binding.order9100);
-                                        initTable_1(null);
+                                         initTable_1(null);
+                                         initTable_2(null);
                                         onMiddlewareFail(ex.getMessage());
                                     }
                                 }
@@ -211,12 +219,12 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
                     case AUTO_CHECK:
                         onMiddlewareChangeColor(2, null, Color.WHITE, null);
                         if (binding.lotId9100.getText().toString().isEmpty()) {
-                            onMiddlewareFail("Enter Lot ID.");
+                            onMiddlewareFail("请输入 Lot ID.");
                             Lot_Focuse();
                             return;
                         }
                         if (binding.lableLotId9100.getText().toString().isEmpty()) {
-                            onMiddlewareFail("Enter Lable Lot ID.");
+                            onMiddlewareFail("请输入 Lable Lot ID.");
                             Lable_Lot_Focuse();
                             return;
                         }
@@ -227,17 +235,20 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
                             onMiddlewareChangeColor(2, null, Color.RED, null);
                             return;
                         }
-                        boolean flag= false;
-                        for(PrintHistory p :Parts_list)
-                        {
-                            if(p.getLot_id().equals(Scan_Id))
-                            {
+                        if (Parts_list == null) {
+                            onMiddlewareFail("请查询调拨单号。");
+                            onMiddlewareChangeColor(2, null, Color.RED, null);
+                            return;
+                        }
+                        boolean flag = false;
+                        for (PrintHistory p : Parts_list) {
+                            if (p.getLot_id().equals(Scan_Id)) {
                                 flag = true;
                             }
                         }
-                        if(!flag )
-                        {
-                            onMiddlewareFail(Scan_Id+":不存在。");
+                        if (!flag) {
+                            onMiddlewareFail(Scan_Id + ":不存在。");
+                            Lable_Lot_Focuse();
                             onMiddlewareChangeColor(2, null, Color.RED, null);
                             return;
                         }
@@ -249,13 +260,34 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
                                     try {
                                         boolean res = Menu.Client.Lot_ID_Validation_9100_1(Scan_Id);
                                         if (res) {
+                                            Lable_Lot_Focuse();
                                             Lot_Focuse();
-                                            Get_Lot_List_Id_9();
+                                            for (PrintHistory hs : Parts_list) {
+                                                if (hs.getLot_id().equals(Scan_Id)) {
+                                                    hs.setCode("OK");
+                                                    hs.setCreateTime(new Date());
+                                                    break;
+                                                }
+                                            }
+                                           // Get_Lot_List_Id_9();
+                                            initTable_1(Parts_list);
                                             onMiddlewareChangeColor(2, null, Color.GREEN, null);
                                         }
                                     } catch (Exception ex) {
-                                        onMiddlewareChangeColor(2, null, Color.RED, null);
                                         Lable_Lot_Focuse();
+                                        Lot_Focuse();
+                                        for (PrintHistory hs : Parts_list) {
+                                            if ((hs.getCode() == null || !hs.getCode().equals("OK")) && hs.getLot_id().equals(Scan_Id)) {
+                                                hs.setCode("NG");
+                                                hs.setCreateTime(new Date());
+                                                break;
+                                            }
+                                            if (hs.getCode() != null && hs.getCode().equals("OK") && hs.getLot_id().equals(Scan_Id)) {
+                                                hs.setCreateTime(new Date());
+                                            }
+                                        }
+                                        initTable_1(Parts_list);
+                                        onMiddlewareChangeColor(2, null, Color.RED, null);
                                         onMiddlewareFail(ex.getMessage());
                                     }
                                 }
@@ -295,13 +327,10 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
                     onMiddlewareChangeColor(2, null, Color.WHITE, null);
                     binding.lotId9100.setText(s);
                     Lable_Lot_Focuse();
-                }
-               else if (binding.order9100.hasFocus()) {//扫描的是lableLotId9100
+                } else if (binding.order9100.hasFocus()) {//扫描的是lableLotId9100
                     binding.order9100.setText(s);
                     Get_Lot_List_Id_9();
-                }
-
-                else if (binding.lableLotId9100.hasFocus()) {//扫描的是lableLotId9100
+                } else if (binding.lableLotId9100.hasFocus()) {//扫描的是lableLotId9100
                     binding.lableLotId9100.setText(s);
                     Auto_Check();
                 }
@@ -371,7 +400,7 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
                             sweetAlertDialog.dismiss();
-                            toSetting();
+                            finish();
                         }
                     });
             dialog.setCancelable(false);
@@ -455,6 +484,13 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
 //        onShowMSG(msg);
     }
 
+
+    // 捕获返回键的方法2
+    @Override
+    public void onBackPressed() {
+        binding.includeTitle.leftButton.performClick();
+    }
+
     private void initPrint() {
         mPrinter = PosManager.get().getPrinterDevice();
         // Set up print listening
@@ -471,6 +507,7 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
     private OnPrintEventListener mPrinterListener = new OnPrintEventListener() {
         @Override
         public void onEvent(int event) {
+            isStop = true;
             switch (event) {
                 case EVENT_UNKNOW:
                     showMsg(getString(R.string.txt_event_unknown));
@@ -615,6 +652,36 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
 
     private void initViews() {
         initTable_1(null);
+        initTable_2(null);
+        binding.table19100.setVisibility(View.GONE);
+        binding.print9100View.setVisibility(View.GONE);
+        binding.table29100.setVisibility(View.VISIBLE);
+        binding.tab9100.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int tabIndex = binding.tab9100.getSelectedTabPosition();
+                if(tabIndex==0){
+                    binding.table19100.setVisibility(View.GONE);
+                    binding.print9100View.setVisibility(View.GONE);
+                    binding.table29100.setVisibility(View.VISIBLE);
+                }else{
+                    binding.table19100.setVisibility(View.VISIBLE);
+                    binding.print9100View.setVisibility(View.VISIBLE);
+                    binding.table29100.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        binding.tab9100.getTabAt(0).select();
         binding.clear19100.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -626,10 +693,50 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
         binding.print9100.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for(PrintHistory p :Parts_list)
-                {
-                    printScanResult(p.getLot_id(),true);
-                }
+                final String showalert_msg = "是否要打印选中标签。";
+                SweetAlertDialog dialog = new SweetAlertDialog(Activity_9100.this, SweetAlertDialog.NORMAL_TYPE)
+                        .setTitleText(getString(R.string.txt_alert_title))
+                        .setContentText(showalert_msg)
+                        .setConfirmText(getString(R.string.txt_ok))
+                        .setCancelText("取消")
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismiss();
+                            }
+                        })
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                              try {
+                                  if (Parts_list == null || Parts_list.size() <= 0) {
+                                      return;
+                                  }
+                                  isStop = false;
+                                  for (PrintHistory p : Parts_list) {
+                                      if (p.getLot_id() == null || p.getLot_id().isEmpty()) {
+                                          continue;
+                                      }
+                                      if (p.getSel()) {
+                                          printScanResult(p.getLot_id(), true);
+                                          p.setSel(false);
+                                          if (isStop) {
+                                              p.setSel(true);
+                                              break;
+                                          }
+                                      }
+                                  }
+                                  initTable_1(Parts_list);
+                                  sweetAlertDialog.dismiss();
+                              }catch(Exception ex) {
+
+                              }
+
+                            }
+                        });
+                dialog.setCancelable(true);
+                dialog.show();
+
             }
         });
         binding.clear29100.setOnClickListener(new View.OnClickListener() {
@@ -653,7 +760,30 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
         binding.includeTitle.leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                final String showalert_msg = "是否退出9100。";
+                SweetAlertDialog dialog = new SweetAlertDialog(Activity_9100.this, SweetAlertDialog.NORMAL_TYPE)
+                        .setTitleText(getString(R.string.txt_alert_title))
+                        .setContentText(showalert_msg)
+                        .setConfirmText(getString(R.string.txt_ok))
+                        .setCancelText("取消")
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismiss();
+                            }
+                        })
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                try {
+                                    sweetAlertDialog.dismiss();
+                                    finish();
+                                }catch(Exception ex) {
+
+                                }
+                            }
+                        });
+                dialog.show();
             }
         });
         binding.buttonOK9100.setOnClickListener(new View.OnClickListener() {
@@ -666,54 +796,140 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
         filter.addAction(ISMART_KEY_SCAN_VALUE);
         registerReceiver(mReceiver, filter);
         Focuse_Control(binding.order9100);
-        if(Menu.USER_NAME.toUpperCase().equals("ADMIN"))
-        {
+        if (Menu.USER_NAME.toUpperCase().equals("ADMIN")) {
             binding.print9100.setVisibility(View.VISIBLE);
         }
     }
 
     private Column<Object> checkColumn1;
     private Column<Object> batch_id_Column;
+    private Column<Object> flagColumn;
+    private Column<Boolean> selColumn;
+    private Column<Object> createDateColumn;
     private List<PrintHistory> Parts_list = new ArrayList<>();
 
     private void initTable_1(List<PrintHistory> history_list) {
         batch_id_Column = batch_id_Column != null ? batch_id_Column : new Column<>("Lot ID", "lot_id");
-        checkColumn1 = checkColumn1 != null ? checkColumn1 : new Column<>("State", "name");
-        checkColumn1.setComputeWidth(120);
+        checkColumn1 = checkColumn1 != null ? checkColumn1 : new Column<>("Status", "name");
+        flagColumn = flagColumn != null ? flagColumn : new Column<>("Flag", "code");
+        createDateColumn = createDateColumn != null ? createDateColumn : new Column<>("CreateOn", "createTime");
+        selColumn = new Column<>("选", "sel", new ImageResDrawFormat<Boolean>(20, 20) {
+            @Override
+            protected Context getContext() {
+                return Activity_9100.this;
+            }
+
+            @Override
+            protected int getResourceID(Boolean isCheck, String value, int position) {
+                if (isCheck) {
+                    return R.mipmap.check;
+                }
+                return 0;
+            }
+        });
+//        selColumn.setWidth(40);
+        selColumn.setOnColumnItemClickListener(new OnColumnItemClickListener<Boolean>() {
+
+            @Override
+
+            public void onClick(Column<Boolean> column, String value, Boolean bool, int position) {
+                boolean ischeck = selColumn.getDatas().get(position);
+                if (Parts_list != null) {
+                    if (position >= 0) {
+                        selColumn.getDatas().set(position, !(ischeck));
+                        binding.table19100.refreshDrawableState();
+                        binding.table19100.invalidate();
+                        Parts_list.get(position).setSel(!(ischeck));
+                    }
+                }
+            }
+
+        });
+        //        flagColumn.setWidth(100);
+        if (history_list != null && history_list.size() > 0 && Parts_list != null && Parts_list.size() > 0) {
+            for (PrintHistory hs : Parts_list) {
+                for (PrintHistory ha : history_list) {
+                    if (ha.getLot_id().equals(hs.getLot_id()) && ha.getCode() == null) {
+                        ha.setCode(hs.getCode());
+                        ha.setCreateTime(hs.getCreateTime());
+                        break;
+                    }
+                }
+            }
+        }
         Parts_list = history_list;
         if (history_list == null) {
             history_list = new ArrayList<>();
             history_list.add(new PrintHistory());
         }
-        TableData tableData = new TableData<PrintHistory>("List", history_list, batch_id_Column, checkColumn1);
+        batch_id_Column.setFixed(true);
+        checkColumn1.setFixed(true);
+        TableData tableData = null;
+        tableData = new TableData<PrintHistory>("LOT List", history_list, batch_id_Column, checkColumn1, flagColumn,selColumn, createDateColumn);
+        createDateColumn.setReverseSort(true);
+        tableData.setSortColumn(createDateColumn);
         binding.table19100.setTableData(tableData);
         TableConfig config = binding.table19100.getConfig();
+        //Y序号列
+        config.setFixedYSequence(true);
         config.setShowTableTitle(false);
         config.setShowXSequence(false);
+        tableData.setYSequenceFormat(new BaseSequenceFormat() {
+            @Override
+            public String format(Integer integer) {
+                return String.valueOf(integer - 1);
+            }
+        });
         config.setContentCellBackgroundFormat(new BaseCellBackgroundFormat<CellInfo>() {
             @Override
             public int getBackGroundColor(CellInfo cellInfo) {
                 List<PrintHistory> list = binding.table19100.getTableData().getT();
                 PrintHistory carr = list.get(cellInfo.row);
                 String scan = carr.getLot_id();
-                String targer = carr.getName();
-                if ((scan == null) || (scan.isEmpty())) {
+                String targer = carr.getCode();
+                if ((scan == null) || (scan.isEmpty()) || targer == null || (targer.isEmpty())) {
                     return Color.WHITE;
-                } else if (targer.equals("OK")) {
+                } else if (targer.toUpperCase().equals("OK")) {
                     return Color.GREEN;
-                } else if (targer.equals("NG"))
-                {
-                    return Color.WHITE;
-                }
-                else {
+                } else if (targer.toUpperCase().equals("NG")) {
                     return Color.RED;
+                } else {
+                    return Color.WHITE;
                 }
             }
         });
     }
-    String str_codetypename ="";
+
+    private Column<Object> CHAR_ID;
+    private Column<Object> VALUE;
+    private List<PrintHistory> Spec_list = new ArrayList<>();
+
+    private void initTable_2(List<PrintHistory> history_list) {
+        CHAR_ID = CHAR_ID != null ? CHAR_ID : new Column<>("CHAR ID", "code");
+        VALUE = VALUE != null ? VALUE : new Column<>("VALUE", "name");
+        Spec_list = history_list;
+        if (history_list == null) {
+            history_list = new ArrayList<>();
+            history_list.add(new PrintHistory());
+        }
+        TableData tableData = new TableData<PrintHistory>("SPEC LIST", history_list, CHAR_ID, VALUE);
+        binding.table29100.setTableData(tableData);
+        TableConfig config = binding.table29100.getConfig();
+        config.setFixedYSequence(true);
+        config.setShowTableTitle(false);
+        config.setShowXSequence(false);
+        tableData.setYSequenceFormat(new BaseSequenceFormat() {
+            @Override
+            public String format(Integer integer) {
+                return String.valueOf(integer - 1);
+            }
+        });
+    }
+
+    String str_codetypename = "";
+
     public Bitmap printScanResult(String result, boolean isprint) {
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
         int ScanCodeType = 1;
@@ -737,7 +953,7 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
         //打印浓度
         int print_setting = 25;
         try {
-            print_setting =  preferencesUtils.getStringToInt(Constant.KEY_PRINT_SETTING,25) ;
+            print_setting = preferencesUtils.getStringToInt(Constant.KEY_PRINT_SETTING, 25);
         } catch (Exception ex) {
         }
         int concentration = print_setting;
@@ -773,7 +989,7 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
         if (ScanCodeType == 1) {
             if (str_count > 16 && str_count <= 26) {
                 mWidth = 390;//
-                left = 15 ;
+                left = 15;
             } else if (str_count > 26) {
                 mWidth = 390;
                 concentration = 1;
@@ -790,10 +1006,10 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
         if (ScanCodeType == 2) {
             mWidth = 150;
             mHeight = 150;
-            left =  50;
+            left = 50;
             flag = false;
         }
-        mBitmap = BarcodeCreater.creatBarcode(this, result, mWidth, mHeight,flag , ScanCodeType, _s_45);
+        mBitmap = BarcodeCreater.creatBarcode(this, result, mWidth, mHeight, flag, ScanCodeType, _s_45);
         if (isprint) {
             byte[] printData = BitmapTools.bitmap2PrinterBytes(mBitmap);
             mPrinter.addBmp(concentration, left, mBitmap.getWidth(), mBitmap.getHeight(), printData);
@@ -894,6 +1110,10 @@ public class Activity_9100 extends AppCompatActivity implements MiddlewareListen
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            // 按下BACK，同时没有重复
+            binding.includeTitle.leftButton.performClick();
+        }
 
         if (!ButtonUtils.isFastDoubleClick_Key(keyCode, 100)) {
 

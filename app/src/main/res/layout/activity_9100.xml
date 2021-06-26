@@ -25,31 +25,33 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/bg_item_white"
                 android:gravity="center_vertical"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="#dddddd"
                     android:orientation="vertical"
-                    android:padding="20dp" >
+                    android:padding="20dp">
+
                     <LinearLayout
                         style="@style/SettingRow"
                         android:layout_width="match_parent"
                         android:background="@drawable/bg_item_white"
-                        android:paddingRight="0dp"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:paddingRight="0dp">
 
                         <TextView
                             style="@style/TextCommon"
                             android:layout_width="wrap_content"
                             android:text="@string/txt_input_order_index" />
+
                         <EditText
-                        android:id="@+id/order_9100"
-                        style="@style/TextEdit"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:textAlignment="center" />
+                            android:id="@+id/order_9100"
+                            style="@style/TextEdit"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:textAlignment="center" />
 
                         <Button
                             android:id="@+id/orderButton9100"
@@ -64,16 +66,11 @@
                             android:textSize="14sp" />
                     </LinearLayout>
 
-                    <com.bin.david.form.core.SmartTable
-                        android:id="@+id/table_1_9100"
-                        android:layout_width="match_parent"
-                        android:layout_height="408dp" />
-
                     <LinearLayout
                         style="@style/SettingRow"
                         android:layout_width="match_parent"
+                        android:layout_marginTop="10dp"
                         android:background="@drawable/bg_item_white"
-                        android:layout_marginTop="20dp"
                         android:gravity="center">
 
                         <TextView
@@ -92,6 +89,18 @@
                             android:id="@+id/clear_1_9100"
                             style="@style/Button_X" />
 
+                        <Button
+                            android:id="@+id/button_OK_9100"
+                            android:layout_width="233dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/btn_bottom_confirm_bg"
+                            android:gravity="center"
+                            android:singleLine="true"
+                            android:text="@string/txt_confirm"
+                            android:textColor="@color/white"
+                            android:textSize="14sp" />
+
                     </LinearLayout>
 
                     <LinearLayout
@@ -99,8 +108,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_item_white"
-                        android:paddingRight="0dp"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:paddingRight="0dp">
 
                         <TextView
                             style="@style/TextCommon"
@@ -117,27 +126,51 @@
 
                         <Button
                             android:id="@+id/clear_2_9100"
-                            style="@style/Button_X"/>
+                            style="@style/Button_X" />
                     </LinearLayout>
+
+
+                    <android.support.design.widget.TabLayout
+                        android:id="@+id/tab9100"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/blue_button_background">
+
+                        <android.support.design.widget.TabItem
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="SPEC LIST" />
+
+                        <android.support.design.widget.TabItem
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="LOT List" />
+                    </android.support.design.widget.TabLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_item_white"
-                        android:gravity="center" >
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingBottom="10dp">
 
-
-                        <Button
-                            android:id="@+id/button_OK_9100"
+                        <com.bin.david.form.core.SmartTable
+                            android:id="@+id/table_2_9100"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:background="@drawable/btn_bottom_confirm_bg"
-                            android:gravity="center"
-                            android:singleLine="true"
-                            android:text="@string/txt_confirm"
-                            android:textColor="@color/white"
-                            android:textSize="14sp" />
+                            android:layout_height="370dp" />
+
+                        <com.bin.david.form.core.SmartTable
+                            android:id="@+id/table_1_9100"
+                            android:layout_width="match_parent"
+                            android:layout_height="370dp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/print9100View"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center">
+
                         <Button
                             android:id="@+id/print9100"
                             android:layout_width="match_parent"
@@ -146,17 +179,11 @@
                             android:background="@drawable/btn_bottom_confirm_bg"
                             android:gravity="center"
                             android:singleLine="true"
-                            android:text="打印"
-                            android:visibility="gone"
+                            android:text="打印选中Lot"
                             android:textColor="@color/white"
                             android:textSize="14sp" />
 
                     </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/msg"
-                        style="@style/TextCommon"
-                        android:text="" />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

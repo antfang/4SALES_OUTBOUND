@@ -119,5 +119,9 @@
     <string name="txt_lot_id_big">大标签Lot ID:</string>
     <string name="txt_cust_part_no">Cust Part No.:</string>
     <string name="txt_pallet_id">Pallet ID</string>
+    <string name="txt_factory">Factory</string>
+    <string name="txt_input_factory">请输入Factory</string>
+    <string name="txt_lot_id">Lot ID</string>
+    <string name="text_save_pws">保存密码</string>
 
 </resources>

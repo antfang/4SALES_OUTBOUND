@@ -32,7 +32,7 @@ public class UpdateManager {
     private Context mContext;
     //提示语
     private String updateMsg = "有新的软件包哦，请快下载吧。";;
-    private String serviceName ="122.51.33.156";
+    private String serviceName ="10.10.88.120";
     private static final String apkName = "sales_outbound_release.apk";
     //返回的安装包url
     private String apkUrl = "http://"+serviceName+"/"+apkName+"";
@@ -95,6 +95,34 @@ public class UpdateManager {
         Message msg = mHandler.obtainMessage(OPEN_DAILOG);
         msg.obj = msg_str;
         msg.sendToTarget();
+    }
+    //外部接口让主Activity调用
+    public boolean checkUpdateInfo_online(){
+        URL realUrl;
+        try {
+            realUrl = new URL(apkUrl);
+        } catch (MalformedURLException e) {
+            openDailog(mContext.getString(R.string.txt_check_version_fail)+":"+apkUrl);
+            return false;
+        }
+        // 打开和URL之间zhi的连接
+        HttpURLConnection connection;
+        int code ;
+        try {
+            connection = (HttpURLConnection) realUrl.openConnection();
+            connection.connect();
+            code = connection.getResponseCode() ;
+        } catch (IOException e) {
+            openDailog(mContext.getString(R.string.txt_check_version_fail)+":"+apkUrl+"  "+e.getMessage());
+            return false ;
+        }
+        if(code == 200){
+            mHandler.sendEmptyMessage(GET_VERSION);
+            return true;
+        }else{
+           // openDailog(mContext.getString(R.string.txt_check_version_fail)+":"+apkUrl+"   "+code);
+            return false;
+        }
     }
     //外部接口让主Activity调用
     public boolean checkUpdateInfo(){

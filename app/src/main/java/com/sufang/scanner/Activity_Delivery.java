@@ -30,6 +30,7 @@ import com.bin.david.form.core.TableConfig;
 import com.bin.david.form.data.CellInfo;
 import com.bin.david.form.data.column.Column;
 import com.bin.david.form.data.format.bg.BaseCellBackgroundFormat;
+import com.bin.david.form.data.format.sequence.BaseSequenceFormat;
 import com.bin.david.form.data.table.TableData;
 import com.hjq.toast.ToastUtils;
 import com.sufang.dailog.EditDialog;
@@ -100,7 +101,6 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
             super.handleMessage(msg);
             try {
                 if (!isSettingOk()) {
-                    onMiddlewareFail(getString(R.string.txt_alert_message));
                     return;
                 }
                 if (Menu.Client == null) {
@@ -177,12 +177,12 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
                         final TableDialog tableDialog = new TableDialog(Activity_Delivery.this);
                         tableDialog.setTitle("是否提交过站？");
                         List<String> name = new ArrayList<String>();
-                        List<String> field= new ArrayList<>();
+                        List<String> field = new ArrayList<>();
                         field.add("lot_id");
                         field.add("specification");
                         name.add("Lot_ID");
                         name.add("Error_Msg");
-                        tableDialog.setData(name,field,type_list);
+                        tableDialog.setData(name, field, type_list);
                         tableDialog.setYesOnclickListener("提交", new TableDialog.onYesOnclickListener() {
                             @Override
                             public void onYesClick(String phone) {
@@ -217,12 +217,12 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
                         final TableDialog tableDialog1 = new TableDialog(Activity_Delivery.this);
                         tableDialog1.setTitle("是否提交过站？");
                         List<String> name1 = new ArrayList<String>();
-                        List<String> field1= new ArrayList<>();
+                        List<String> field1 = new ArrayList<>();
                         field1.add("erp_lot_id");
                         field1.add("mes_lot_id");
                         name1.add("ERP Lot");
                         name1.add("MES Lot");
-                        tableDialog1.setData(name1,field1,lot_list);
+                        tableDialog1.setData(name1, field1, lot_list);
                         tableDialog1.setYesOnclickListener("提交", new TableDialog.onYesOnclickListener() {
                             @Override
                             public void onYesClick(String phone) {
@@ -271,9 +271,9 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
                         onMiddlewareChangeColor(2, null, Color.WHITE, null);
                         Flag = "";
                         Delivery_No = "";
-                        error_list=null;
+                        error_list = null;
                         if (binding.deliveryNoDelivery.getText().toString().isEmpty()) {
-                            onMiddlewareFail("Please，Enter Delivery NO.");
+                            onMiddlewareFail("请输入 Delivery NO.");
                             Focuse_Control(DELIVERY_NO);
                             break;
                         }
@@ -306,7 +306,7 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
                         onMiddlewareChangeColor(2, null, Color.WHITE, null);
                         Delivery_No = "";
                         if (binding.deliveryNoDelivery.getText().toString().isEmpty()) {
-                            onMiddlewareFail("Please，Enter Delivery NO.");
+                            onMiddlewareFail("请输入 Delivery NO.");
                             Focuse_Control(DELIVERY_NO);
                             break;
                         }
@@ -460,7 +460,7 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
                         @Override
                         public void onClick(SweetAlertDialog sweetAlertDialog) {
                             sweetAlertDialog.dismiss();
-                            toSetting();
+                            finish();
                         }
                     });
             dialog.setCancelable(false);
@@ -494,7 +494,7 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
             show_alert(msg);
         }
         if (alarm == null) {
-        } else if (alarm) {
+        } else if (alarm ) {
             playAlarm();
         } else {
             playSound();
@@ -719,7 +719,30 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
         binding.includeTitle.leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                final String showalert_msg = "是否退出Delivery过站。";
+                SweetAlertDialog dialog = new SweetAlertDialog(Activity_Delivery.this, SweetAlertDialog.NORMAL_TYPE)
+                        .setTitleText(getString(R.string.txt_alert_title))
+                        .setContentText(showalert_msg)
+                        .setConfirmText(getString(R.string.txt_ok))
+                        .setCancelText("取消")
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.dismiss();
+                            }
+                        })
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                try {
+                                    sweetAlertDialog.dismiss();
+                                    finish();
+                                }catch(Exception ex) {
+
+                                }
+                            }
+                        });
+                dialog.show();
             }
         });
 //        binding.buttonOK9500.setOnClickListener(new View.OnClickListener() {
@@ -742,7 +765,10 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
             @Override
             public void onClick(View v) {
                 check_list = new ArrayList<>();
-                for(PrintHistory ph:table_list) {
+                if(table_list==null || table_list.isEmpty()){
+                    return;
+                }
+                for (PrintHistory ph : table_list) {
                     if (ph.getMes_lot_id() == null || ph.getErp_lot_id() == null || !ph.getErp_lot_id().equals(ph.getMes_lot_id())) {
                         check_list.add(ph);
                     }
@@ -760,27 +786,25 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
             }
         });
 
-        if(Menu.USER_NAME.toUpperCase().equals("ADMIN"))
-        {
-            binding.buttonPrintDeliveryLayout.setVisibility(View.GONE);
+        if (Menu.USER_NAME.toUpperCase().equals("ADMIN")) {
+            binding.buttonPrintDeliveryLayout.setVisibility(View.VISIBLE);
         }
         binding.buttonPrintDelivery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(table_list!=null && table_list.size()>0&& table_list.get(0).getErp_lot_id()!=null){
-                    for(PrintHistory p : table_list){
-                        printScanResult(p.getErp_lot_id(),true);
+                if (table_list != null && table_list.size() > 0 && table_list.get(0).getErp_lot_id() != null) {
+                    for (PrintHistory p : table_list) {
+                        printScanResult(p.getErp_lot_id(), true);
                     }
                 }
-                if(!binding.deliveryNoDelivery.getText().toString().isEmpty())
-                {
-                    printScanResult(binding.deliveryNoDelivery.getText().toString(),true);
+                if (!binding.deliveryNoDelivery.getText().toString().isEmpty()) {
+                    printScanResult(binding.deliveryNoDelivery.getText().toString(), true);
                 }
             }
         });
     }
-    public void ShowError_Lot3( List<PrintHistory> lot_list )
-    {
+
+    public void ShowError_Lot3(List<PrintHistory> lot_list) {
         //弹出口令对话框
 //        final EditDialog editDialog = new EditDialog(Activity_Delivery.this);
 //        editDialog.setTitle(getString(R.string.txt_please_input_setting_psw));
@@ -812,12 +836,12 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
         final TableDialog tableDialog1 = new TableDialog(Activity_Delivery.this);
         tableDialog1.setTitle("是否提交过站？");
         List<String> name1 = new ArrayList<String>();
-        List<String> field1= new ArrayList<>();
+        List<String> field1 = new ArrayList<>();
         field1.add("erp_lot_id");
         field1.add("mes_lot_id");
         name1.add("ERP Lot");
         name1.add("MES Lot");
-        tableDialog1.setData(name1,field1,lot_list);
+        tableDialog1.setData(name1, field1, lot_list);
         tableDialog1.setYesOnclickListener("提交", new TableDialog.onYesOnclickListener() {
             @Override
             public void onYesClick(String phone) {
@@ -835,9 +859,11 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
         });
         tableDialog1.show();
     }
-    String str_codetypename ="";
+
+    String str_codetypename = "";
+
     public Bitmap printScanResult(String result, boolean isprint) {
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             return null;
         }
         int ScanCodeType = 1;
@@ -861,7 +887,7 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
         //打印浓度
         int print_setting = 25;
         try {
-            print_setting =  preferencesUtils.getStringToInt(Constant.KEY_PRINT_SETTING,25) ;
+            print_setting = preferencesUtils.getStringToInt(Constant.KEY_PRINT_SETTING, 25);
         } catch (Exception ex) {
         }
         int concentration = print_setting;
@@ -897,7 +923,7 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
         if (ScanCodeType == 1) {
             if (str_count > 16 && str_count <= 26) {
                 mWidth = 390;//
-                left = 15 ;
+                left = 15;
             } else if (str_count > 26) {
                 mWidth = 390;
                 concentration = 1;
@@ -914,10 +940,10 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
         if (ScanCodeType == 2) {
             mWidth = 150;
             mHeight = 150;
-            left =  50;
+            left = 50;
             flag = false;
         }
-        mBitmap = BarcodeCreater.creatBarcode(this, result, mWidth, mHeight,flag , ScanCodeType, _s_45);
+        mBitmap = BarcodeCreater.creatBarcode(this, result, mWidth, mHeight, flag, ScanCodeType, _s_45);
         if (isprint) {
             byte[] printData = BitmapTools.bitmap2PrinterBytes(mBitmap);
             mPrinter.addBmp(concentration, left, mBitmap.getWidth(), mBitmap.getHeight(), printData);
@@ -966,6 +992,12 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
         check_list = new ArrayList<>();
         config.setShowTableTitle(false);
         config.setShowXSequence(false);
+        tableData.setYSequenceFormat(new BaseSequenceFormat(){
+            @Override
+            public String format(Integer integer) {
+                return String.valueOf(integer-1);
+            }
+        });
         config.setContentCellBackgroundFormat(new BaseCellBackgroundFormat<CellInfo>() {
             @Override
             public int getBackGroundColor(CellInfo cellInfo) {
@@ -973,15 +1005,15 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
                 PrintHistory carr = list.get(cellInfo.row);
                 String scan = carr.getErp_lot_id();
                 String targer = carr.getMes_lot_id();
-                if ((scan == null && targer == null) || (scan!=null&& targer!=null &&scan.isEmpty() && targer.isEmpty())) {
+                if ((scan == null && targer == null) || (scan != null && targer != null && scan.isEmpty() && targer.isEmpty())) {
                     return Color.WHITE;
                 } else if (scan == null || targer == null || scan.isEmpty() || targer.isEmpty() || !targer.equals(scan)) {
-                    if(!check_list.contains(carr)) {
+                    if (!check_list.contains(carr)) {
                         check_list.add(carr);
                     }
                     return Color.RED;
                 } else {
-                    if(check_list.contains(carr)) {
+                    if (check_list.contains(carr)) {
                         check_list.remove(carr);
                     }
                     return Color.GREEN;
@@ -1056,7 +1088,11 @@ public class Activity_Delivery extends AppCompatActivity implements MiddlewareLi
                 break;
         }
     }
-
+    // 捕获返回键的方法2
+    @Override
+    public void onBackPressed() {
+        binding.includeTitle.leftButton.performClick();
+    }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 

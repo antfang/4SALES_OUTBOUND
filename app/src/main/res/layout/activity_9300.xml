@@ -82,7 +82,7 @@
                     <com.bin.david.form.core.SmartTable
                         android:id="@+id/table_1_9300"
                         android:layout_width="match_parent"
-                        android:layout_height="227dp" />
+                        android:layout_height="228dp" />
 
                 <LinearLayout
                     style="@style/SettingRow"
@@ -230,38 +230,41 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:gravity="center"
                     android:padding="10dp">
 
                     <Button
                         android:id="@+id/end_9300"
-                        android:layout_width="match_parent"
+                        android:layout_width="144dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:background="@drawable/btn_bottom_confirm_bg"
                         android:text="@string/txt_end"
                         android:textColor="@color/white" />
 
-                </LinearLayout>
-                <LinearLayout
-                    android:id="@+id/buttonPrint9300layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:gravity="center"
-                    android:padding="10dp">
-
                     <Button
                         android:id="@+id/buttonPrint9300"
-                        android:layout_width="match_parent"
+                        android:layout_width="160dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
+                        android:layout_marginLeft="50dp"
                         android:background="@drawable/btn_bottom_confirm_bg"
                         android:text="打印"
                         android:textColor="@color/white" />
 
                 </LinearLayout>
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/buttonPrint9300layout"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:visibility="visible"-->
+<!--                    android:gravity="center"-->
+<!--                    android:padding="10dp">-->
+
+<!--                    -->
+
+<!--                </LinearLayout>-->
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

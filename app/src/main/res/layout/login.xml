@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_item_white"
                     android:gravity="center"
-                    android:padding="5dp">
+                    android:padding="10dp">
 
                     <TextView
                         style="@style/TextCommon"
@@ -68,10 +68,11 @@
                     <EditText
                         android:id="@+id/login_name"
                         style="@style/TextEdit"
-                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
                         android:layout_weight="1"
-                        android:imeOptions="actionNext"
-                        android:textAlignment="center" />
+                        android:gravity="center"
+                        android:imeOptions="actionNext"/>
 
 
                 </LinearLayout>
@@ -82,7 +83,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_item_white"
                     android:gravity="center"
-                    android:padding="5dp">
+                    android:padding="10dp">
 
                     <TextView
                         style="@style/TextCommon"
@@ -91,16 +92,18 @@
                     <EditText
                         android:id="@+id/login_password"
                         style="@style/TextEdit"
-                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
                         android:layout_weight="1"
-                        android:textAlignment="center"
                         android:gravity="center"
                         android:inputType="textPassword"
                         android:imeOptions="actionDone" />
-
-
                 </LinearLayout>
-
+                <CheckBox
+                    android:id="@+id/savePass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_save_pws" />
 
                 <LinearLayout
                     style="@style/SettingRow"
@@ -112,10 +115,10 @@
 
                     <Button
                         android:id="@+id/login_button"
-                        android:background="@drawable/btn_bottom_confirm_bg"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:background="@color/main_blue_color"
                         android:gravity="center"
                         android:singleLine="true"
                         android:text="@string/txt_login_button"
@@ -135,12 +138,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:background="@drawable/btn_bottom_confirm_bg"
+                        android:background="@color/main_blue_color"
                         android:gravity="center"
                         android:singleLine="true"
                         android:text="@string/txt_exist_button"
                         android:textColor="@color/white"
                         android:textSize="14sp" />
+
                 </LinearLayout>
 
             </LinearLayout>

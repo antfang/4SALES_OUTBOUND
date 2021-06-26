@@ -504,7 +504,7 @@ public class Webservice {
                     } else if (value.equals("Field")) {
                         String name_ = xml.getAttributeValue("", "name");
                         String value_ = xml.getAttributeValue("", "value");
-                        if (name_.equals("ogbud04"))//托号
+                        if (name_.equals("ogbud03"))//托号
                         {
                             part.setPallet_no(value_);
                         }
